@@ -9,50 +9,233 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as MainRouteImport } from './routes/_main'
+import { Route as MainIndexRouteImport } from './routes/_main/index'
+import { Route as AuthRegisterRouteImport } from './routes/auth/register'
+import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as MainSearchRouteImport } from './routes/_main/search'
+import { Route as MainProfileRouteImport } from './routes/_main/profile'
+import { Route as MainHistoryRouteImport } from './routes/_main/history'
+import { Route as MainFavoriteRouteImport } from './routes/_main/favorite'
 
-const IndexRoute = IndexRouteImport.update({
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MainRoute = MainRouteImport.update({
+  id: '/_main',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MainIndexRoute = MainIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => MainRoute,
+} as any)
+const AuthRegisterRoute = AuthRegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AuthRoute,
+} as any)
+const MainSearchRoute = MainSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => MainRoute,
+} as any)
+const MainProfileRoute = MainProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => MainRoute,
+} as any)
+const MainHistoryRoute = MainHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => MainRoute,
+} as any)
+const MainFavoriteRoute = MainFavoriteRouteImport.update({
+  id: '/favorite',
+  path: '/favorite',
+  getParentRoute: () => MainRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof MainIndexRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/favorite': typeof MainFavoriteRoute
+  '/history': typeof MainHistoryRoute
+  '/profile': typeof MainProfileRoute
+  '/search': typeof MainSearchRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/favorite': typeof MainFavoriteRoute
+  '/history': typeof MainHistoryRoute
+  '/profile': typeof MainProfileRoute
+  '/search': typeof MainSearchRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/': typeof MainIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_main': typeof MainRouteWithChildren
+  '/auth': typeof AuthRouteWithChildren
+  '/_main/favorite': typeof MainFavoriteRoute
+  '/_main/history': typeof MainHistoryRoute
+  '/_main/profile': typeof MainProfileRoute
+  '/_main/search': typeof MainSearchRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/_main/': typeof MainIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/favorite'
+    | '/history'
+    | '/profile'
+    | '/search'
+    | '/auth/login'
+    | '/auth/register'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/auth'
+    | '/favorite'
+    | '/history'
+    | '/profile'
+    | '/search'
+    | '/auth/login'
+    | '/auth/register'
+    | '/'
+  id:
+    | '__root__'
+    | '/_main'
+    | '/auth'
+    | '/_main/favorite'
+    | '/_main/history'
+    | '/_main/profile'
+    | '/_main/search'
+    | '/auth/login'
+    | '/auth/register'
+    | '/_main/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  MainRoute: typeof MainRouteWithChildren
+  AuthRoute: typeof AuthRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_main': {
+      id: '/_main'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof MainRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_main/': {
+      id: '/_main/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof MainIndexRouteImport
+      parentRoute: typeof MainRoute
+    }
+    '/auth/register': {
+      id: '/auth/register'
+      path: '/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_main/search': {
+      id: '/_main/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof MainSearchRouteImport
+      parentRoute: typeof MainRoute
+    }
+    '/_main/profile': {
+      id: '/_main/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof MainProfileRouteImport
+      parentRoute: typeof MainRoute
+    }
+    '/_main/history': {
+      id: '/_main/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof MainHistoryRouteImport
+      parentRoute: typeof MainRoute
+    }
+    '/_main/favorite': {
+      id: '/_main/favorite'
+      path: '/favorite'
+      fullPath: '/favorite'
+      preLoaderRoute: typeof MainFavoriteRouteImport
+      parentRoute: typeof MainRoute
     }
   }
 }
 
+interface MainRouteChildren {
+  MainFavoriteRoute: typeof MainFavoriteRoute
+  MainHistoryRoute: typeof MainHistoryRoute
+  MainProfileRoute: typeof MainProfileRoute
+  MainSearchRoute: typeof MainSearchRoute
+  MainIndexRoute: typeof MainIndexRoute
+}
+
+const MainRouteChildren: MainRouteChildren = {
+  MainFavoriteRoute: MainFavoriteRoute,
+  MainHistoryRoute: MainHistoryRoute,
+  MainProfileRoute: MainProfileRoute,
+  MainSearchRoute: MainSearchRoute,
+  MainIndexRoute: MainIndexRoute,
+}
+
+const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
+
+interface AuthRouteChildren {
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthRegisterRoute: typeof AuthRegisterRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthLoginRoute: AuthLoginRoute,
+  AuthRegisterRoute: AuthRegisterRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  MainRoute: MainRouteWithChildren,
+  AuthRoute: AuthRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

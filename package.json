@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@iconify/react": "^6.0.2",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/react-query-devtools": "^5.91.3",
     "@tanstack/react-router": "^1.166.3",

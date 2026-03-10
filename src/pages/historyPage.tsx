@@ -5,10 +5,10 @@ import {
     Page,
 } from 'konsta/react';  
 
-export default function MainPage() {
+export default function HistoryPage() {
     return (
         <Page>
-            <BlockTitle>Home</BlockTitle>
+            <BlockTitle>Histori</BlockTitle>
         </Page>
     )
 }
