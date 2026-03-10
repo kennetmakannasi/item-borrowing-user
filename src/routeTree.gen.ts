@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ItemRouteImport } from './routes/item'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as MainRouteImport } from './routes/_main'
 import { Route as MainIndexRouteImport } from './routes/_main/index'
@@ -19,6 +20,11 @@ import { Route as MainProfileRouteImport } from './routes/_main/profile'
 import { Route as MainHistoryRouteImport } from './routes/_main/history'
 import { Route as MainFavoriteRouteImport } from './routes/_main/favorite'
 
+const ItemRoute = ItemRouteImport.update({
+  id: '/item',
+  path: '/item',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -67,6 +73,7 @@ const MainFavoriteRoute = MainFavoriteRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof MainIndexRoute
   '/auth': typeof AuthRouteWithChildren
+  '/item': typeof ItemRoute
   '/favorite': typeof MainFavoriteRoute
   '/history': typeof MainHistoryRoute
   '/profile': typeof MainProfileRoute
@@ -76,6 +83,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
+  '/item': typeof ItemRoute
   '/favorite': typeof MainFavoriteRoute
   '/history': typeof MainHistoryRoute
   '/profile': typeof MainProfileRoute
@@ -88,6 +96,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_main': typeof MainRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
+  '/item': typeof ItemRoute
   '/_main/favorite': typeof MainFavoriteRoute
   '/_main/history': typeof MainHistoryRoute
   '/_main/profile': typeof MainProfileRoute
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/item'
     | '/favorite'
     | '/history'
     | '/profile'
@@ -110,6 +120,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
+    | '/item'
     | '/favorite'
     | '/history'
     | '/profile'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_main'
     | '/auth'
+    | '/item'
     | '/_main/favorite'
     | '/_main/history'
     | '/_main/profile'
@@ -133,10 +145,18 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   MainRoute: typeof MainRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
+  ItemRoute: typeof ItemRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/item': {
+      id: '/item'
+      path: '/item'
+      fullPath: '/item'
+      preLoaderRoute: typeof ItemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -236,6 +256,7 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   MainRoute: MainRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
+  ItemRoute: ItemRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
