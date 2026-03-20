@@ -21,9 +21,12 @@ export default function BottomNavigation() {
 
     return (
         <Tabbar
-            labels={true}
-            icons={true}
-            className="left-0 bottom-0 fixed h-16 flex items-center shadow-lg"
+            {...({
+                labels: true,
+                icons: true,
+                bgClassName: "bg-white/70 dark:bg-black/60 backdrop-blur-md",
+                className: "left-0 bottom-0 fixed h-16 flex items-center"
+            } as any)}
         >
             <ToolbarPane>
                 <TabbarLink
