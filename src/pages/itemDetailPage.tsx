@@ -9,6 +9,7 @@ import {
     Sheet,
     Block,
     Stepper,
+    NavbarBackLink,
 } from 'konsta/react';
 import { useCallback, useEffect, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
@@ -36,11 +37,7 @@ export default function ItemDetailPage() {
                 className="top-0 sticky"
                 medium={size === 'Medium'}
                 large={size === 'Large'}
-                left={
-                    <button onClick={() => history.go(-1)} className="flex items-center">
-                        <Icon height={30} icon={"mingcute:back-fill"} />
-                    </button>
-                }
+                left={<NavbarBackLink onClick={() => history.go(-1)} />}
             />
             <div className="overflow-hidden bg-white dark:bg-black" ref={emblaRef}>
                 <div className="flex">

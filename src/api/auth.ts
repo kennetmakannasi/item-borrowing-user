@@ -1,4 +1,5 @@
-import type { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, VerifyEmailRequest, VerifyEmailResponse } from "../interfaces/auth";
+import type { LoginRequest, LoginResponse, ProfileResponse, RegisterRequest, RegisterResponse, User, UserProfile, VerifyEmailRequest, VerifyEmailResponse } from "../interfaces/auth";
+import type { GeneralResponse } from "../interfaces/generalResponse";
 import { api } from "../utils/api";
 import useError from "../utils/useError";
 
@@ -48,4 +49,9 @@ export const verifyEmailApi = async (data: VerifyEmailRequest): Promise<VerifyEm
             data: null
         })
     }
+};
+
+export const getProfileApi = async (): Promise<ProfileResponse> => {
+    const response = await api.get<GeneralResponse<UserProfile>>('/api/profile/me');
+    return response.data;
 };

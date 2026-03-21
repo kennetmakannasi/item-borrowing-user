@@ -34,6 +34,8 @@ export default function VerifyEmailPage() {
         });
         if (res.success) {
             showToast("Berhasil! Silakan Login", "success");
+            localStorage.removeItem('unverified-email');
+            localStorage.removeItem("unverified-user-id");
             navigate({ to: '/auth/login' });
         } else {
             showToast(res.message, "error");

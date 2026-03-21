@@ -52,7 +52,7 @@ export default function RegisterPage() {
     return (
         <Page>
             <Block className="text-center mt-10">
-                <h1 className="text-3xl font-bold text-primary">Register</h1>
+                <h1 className="text-3xl font-bold text-primary">Daftar</h1>
             </Block>
 
             <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">

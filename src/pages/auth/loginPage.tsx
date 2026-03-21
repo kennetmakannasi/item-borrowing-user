@@ -6,6 +6,7 @@ import * as z from 'zod';
 import { loginApi } from '../../api/auth';
 import { useToast } from '../../context/toastContext';
 import { Link, useNavigate } from '@tanstack/react-router';
+import { useAuth } from '../../context/authContext';
 
 const loginSchema = z.object({
     email: z.string().min(1, 'Email wajib diisi').email('Format email tidak valid'),
@@ -16,6 +17,7 @@ type LoginFormInputs = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
     const { showToast } = useToast();
+    const { login } = useAuth();
     const navigate = useNavigate();
     const {
         register,
@@ -31,7 +33,14 @@ export default function LoginPage() {
             const res = await loginApi(data);
 
             if (res?.success) {
+                const token = res?.data?.token;
+                login(token);
                 showToast(res?.message);
+
+                navigate({
+                    to: "/",
+                    replace: true
+                })
             } else {
                 console.error(res?.message);
                 showToast(res?.message);
@@ -52,7 +61,7 @@ export default function LoginPage() {
     return (
         <Page>
             <Block className="text-center mt-10">
-                <h1 className="text-3xl font-bold text-primary">Login Page</h1>
+                <h1 className="text-3xl font-bold text-primary">Masuk</h1>
             </Block>
 
             <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">

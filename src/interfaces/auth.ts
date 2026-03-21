@@ -21,7 +21,7 @@ export interface User {
     id: number;
     user_name: string;
     display_name: string;
-    email: string;
+    email: string;role: string;
 }
 
 export interface LoginData {
@@ -33,6 +33,18 @@ export interface RegisterData {
     id: number;
 }
 
+export interface UserProfile {
+    id: number;
+    code: string;
+    email: string;
+    user_name: string;
+    display_name: string;
+    status: 'active' | 'inactive'; 
+    warehouse_id: number | null;   
+    avatar: string | null;         
+}
+
 export type LoginResponse = GeneralResponse<LoginData>;
 export type RegisterResponse = GeneralResponse<RegisterData>;
 export type VerifyEmailResponse = GeneralResponse<any>;
+export type ProfileResponse = GeneralResponse<UserProfile>;

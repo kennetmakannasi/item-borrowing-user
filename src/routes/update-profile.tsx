@@ -1,11 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
-import ItemDetailPage from '../pages/itemDetailPage'
 import { ProtectedRoute } from '../middlewares/protected-route'
+import UpdateProfilePage from '../pages/updateProfilePage'
 
-export const Route = createFileRoute('/item')({
+export const Route = createFileRoute('/update-profile')({
   component: () => (
     <ProtectedRoute>
-      <ItemDetailPage/>
+      <UpdateProfilePage/>
     </ProtectedRoute>
   ),
 })
