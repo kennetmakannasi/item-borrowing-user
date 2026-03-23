@@ -41,7 +41,8 @@ export interface UserProfile {
     display_name: string;
     status: 'active' | 'inactive'; 
     warehouse_id: number | null;   
-    avatar: string | null;         
+    avatar: string | null;       
+    role: string  
 }
 
 export type LoginResponse = GeneralResponse<LoginData>;

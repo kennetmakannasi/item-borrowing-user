@@ -3,13 +3,19 @@ import { useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useAuth();
+  const { user, logout ,isLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isLoading && !user) {
       navigate({ to: '/auth/login', replace: true });
     }
+
+    if(user?.role !== 'user' ){
+        logout();
+        navigate({ to: '/auth/login', replace: true });
+    }
+
   }, [user, isLoading, navigate]);
 
   if (isLoading) {

@@ -37,10 +37,10 @@ export default function LoginPage() {
                 login(token);
                 showToast(res?.message);
 
-                navigate({
-                    to: "/",
-                    replace: true
-                })
+                // navigate({
+                //     to: "/",
+                //     replace: true
+                // })
             } else {
                 console.error(res?.message);
                 showToast(res?.message);

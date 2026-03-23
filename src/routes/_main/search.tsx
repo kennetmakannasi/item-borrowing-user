@@ -1,12 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
-import MainPage from '../../pages/mainPage';
+import SearchPage from '../../pages/searchPage';
 
 export const Route = createFileRoute('/_main/search')({
-  component: CardsPage,
+  component: SearchPage,
 });
-
-function CardsPage() {
-  return (
-    <MainPage/>
-  );
-}

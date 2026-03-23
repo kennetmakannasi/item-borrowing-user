@@ -33,6 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = (newToken: string) => {
     Cookies.set('auth_token', newToken, { expires: 1, path: '/' });
     queryClient.invalidateQueries({ queryKey: ['authUser'] });
+    window.location.replace('/')
   };
 
   const logout = () => {
