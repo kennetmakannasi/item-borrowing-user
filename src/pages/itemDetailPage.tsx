@@ -14,19 +14,25 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { useQuery } from '@tanstack/react-query'; // Import Query
-import { getItemDetailApi } from '../api/item';
+import { favoriteApi, getItemDetailApi, removeFavoriteApi } from '../api/item';
+import { useToast } from '../context/toastContext';
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { requestBorrowingApi } from '../api/borrowing';
+import type { BorrowRequestType } from '../interfaces/schemas/borrowing';
 
 export default function ItemDetailPage() {
+    const { showToast } = useToast();
     const { history } = useRouter();
     const location = useLocation();
     const itemId = (location.state as { id: number })?.id;
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [value, setValue] = useState(1);
-    const { data, isLoading, isError } = useQuery({
+    const { data, isLoading, refetch, isError } = useQuery({
         queryKey: ['itemDetail', itemId],
         queryFn: () => getItemDetailApi(itemId),
-        enabled: !!itemId, 
+        enabled: !!itemId,
     });
 
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
@@ -34,10 +40,70 @@ export default function ItemDetailPage() {
     const increase = () => setValue(prev => prev + 1);
     const decrease = () => setValue(prev => (prev - 1 < 1 ? 1 : prev - 1));
 
+    async function handleFavorite() {
+        try {
+            if (data?.data?.is_favorite) {
+                const res = await removeFavoriteApi(data?.data?.id)
+                if (res?.success) {
+                    showToast(res?.message);
+                } else {
+                    console.error(res?.message);
+                    showToast(res?.message);
+                }
+            } else {
+                const res = await favoriteApi({
+                    item_id: data?.data.id ?? 0
+                });
+                if (res?.success) {
+                    showToast(res?.message);
+                } else {
+                    console.error(res?.message);
+                    showToast(res?.message);
+                }
+            }
+            refetch();
+        } catch (error: any) {
+            console.error(error)
+        }
+    }
+    const queryClient = useQueryClient();
+    const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null);
+
+    const mutation = useMutation({
+        mutationFn: requestBorrowingApi,
+        onSuccess: (res) => {
+            showToast("Berhasil mengirim permintaan pinjam");
+            setIsModalOpen(false);
+            queryClient.invalidateQueries({ queryKey: ['itemDetail', itemId] });
+        },
+        onError: (err: any) => {
+            showToast(err.response?.data?.message || "Terjadi kesalahan", "error");
+        }
+    });
+
+    const handleConfirmBorrow = () => {
+        if (!selectedVariantId) {
+            showToast("Silakan pilih varian terlebih dahulu", "error");
+            return;
+        }
+
+        const payload: BorrowRequestType = {
+            item_id: item?.id ?? 0,
+            item_variant_id: selectedVariantId,
+            warehouse_id: item.warehouse_id || 1, 
+            quantity: value,
+            payment_type: "full_payment",
+            due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            notes: "",
+        };
+
+        mutation.mutate(payload);
+    };
+
     const item = data?.data;
 
     if (isLoading) return <Page><Block className="text-center">Memuat detail barang...</Block></Page>;
-    
+
     if (isError || !item) return <Page><Block className="text-center text-red-500">Gagal mengambil data atau barang tidak ditemukan.</Block></Page>;
 
     return (
@@ -47,7 +113,7 @@ export default function ItemDetailPage() {
                 left={<NavbarBackLink onClick={() => history.go(-1)} />}
                 title={item.name}
             />
-            
+
             {/* Carousel Gambar */}
             <div className="overflow-hidden bg-white dark:bg-black" ref={emblaRef}>
                 <div className="flex">
@@ -76,9 +142,19 @@ export default function ItemDetailPage() {
             </div>
 
             <div className='px-5 py-2 mb-24'>
-                <h1 className="text-xl font-bold">{item.name}</h1>
-                <p className="text-gray-500 mt-1">Total Stok: {item.total_available_stock}</p>
-                
+                <div className='flex justify-between items-center'>
+                    <div>
+                        <h1 className="text-xl font-bold">{item.name}</h1>
+                        <p className="text-gray-500 mt-1">Total Stok: {item.total_available_stock}</p>
+                    </div>
+                    <button className='text-red-400' onClick={handleFavorite}>{
+                        item.is_favorite ?
+                            <Icon height={30} icon={'material-symbols:favorite-rounded'} /> :
+                            <Icon height={30} icon={'material-symbols:favorite-outline-rounded'} />
+                    }</button>
+                </div>
+
+
                 <div className='mt-4'>
                     <h1 className="text-lg font-bold">Detail Barang</h1>
                     <div className='flex justify-between items-center'>
@@ -111,9 +187,14 @@ export default function ItemDetailPage() {
                     <h1 className='font-bold text-xl mb-4'>Pilih Varian</h1>
                     <div className='grid grid-cols-2 gap-2 mb-4'>
                         {item.variants.map((v) => (
-                            <Card 
-                                key={v.id} 
-                                className="m-0 cursor-pointer hover:border-primary border-2 border-transparent"
+                            <Card
+                                key={v.id}
+                                // Tambahkan logic class untuk menandai varian yang dipilih
+                                className={`m-0 cursor-pointer transition-all border-2 ${selectedVariantId === v.id
+                                        ? 'border-primary bg-primary/5'
+                                        : 'border-transparent'
+                                    }`}
+                                onClick={() => setSelectedVariantId(v.id)}
                             >
                                 <p className="font-semibold">{v.name}</p>
                                 <p className="text-xs text-gray-500">Stok: {v.availableStock}</p>
@@ -121,14 +202,29 @@ export default function ItemDetailPage() {
                         ))}
                     </div>
 
-                    <div className='w-full flex justify-between items-center px-2 mb-4'>
-                        <p className='text-md'>Jumlah Pinjam</p>
-                        <Stepper value={value} onPlus={increase} onMinus={decrease} />
+                    <div className='w-full flex justify-between items-center px-2 mb-6'>
+                        <div>
+                            <p className='text-md font-medium'>Jumlah Pinjam</p>
+                            <p className='text-xs text-gray-400'>Maksimal: {item.variants.find(v => v.id === selectedVariantId)?.availableStock || 0}</p>
+                        </div>
+                        <Stepper
+                            value={value}
+                            onPlus={increase}
+                            onMinus={decrease}
+                        />
                     </div>
 
                     <div className="flex gap-x-3">
-                        <Button outline rounded onClick={() => setIsModalOpen(false)}>Batal</Button>
-                        <Button rounded onClick={() => alert("Proses Pinjam...")}>Konfirmasi</Button>
+                        <Button outline rounded onClick={() => setIsModalOpen(false)}>
+                            Batal
+                        </Button>
+                        <Button
+                            rounded
+                            onClick={handleConfirmBorrow}
+                            disabled={mutation.isPending}
+                        >
+                            {mutation.isPending ? "Memproses..." : "Konfirmasi"}
+                        </Button>
                     </div>
                 </Block>
             </Sheet>

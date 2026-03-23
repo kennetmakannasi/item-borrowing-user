@@ -3,12 +3,27 @@ import {
     Card,
     BlockTitle,
     Page,
-} from 'konsta/react';  
+} from 'konsta/react';
+import { useQuery } from "@tanstack/react-query";
+import ItemCard from '../components/custom/itemCard';
+import { getFavoriteItemsApi } from '../api/item';
+import { useState } from 'react';
 
 export default function FavoritePage() {
+    const [currentPage, setCurrentPage] = useState(1)
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ['items', currentPage],
+        queryFn: () => getFavoriteItemsApi(currentPage),
+    });
+
     return (
         <Page>
             <BlockTitle>Favorite</BlockTitle>
+            <div className='grid grid-cols-2 gap-5 px-5'>
+                {data?.data.map((item, index) => (
+                    <ItemCard key={index} item={item} />
+                ))}
+            </div>
         </Page>
     )
 }

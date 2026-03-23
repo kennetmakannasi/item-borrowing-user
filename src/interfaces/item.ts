@@ -29,6 +29,7 @@ export interface Item {
 }
 
 export interface ItemDetail {
+  is_favorite: boolean;
   id: number;
   code: string;
   name: string;
@@ -40,5 +41,10 @@ export interface ItemDetail {
   variants: Variant[];
 }
 
+export interface FavoriteItemRequest {
+  item_id: number;
+}
+
 export type ItemListResponse = GeneralResponse<Item[]>;
 export type ItemDetailResponse = GeneralResponse<ItemDetail>;
+export type FavoriteItemResponse = GeneralResponse<FavoriteItemRequest>;
