@@ -20,6 +20,7 @@ import { useToast } from '../context/toastContext';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { requestBorrowingApi } from '../api/borrowing';
 import type { BorrowRequestType } from '../interfaces/schemas/borrowing';
+import type { PaymentType } from '../interfaces/borrowing';
 
 export default function ItemDetailPage() {
     const { showToast } = useToast();
@@ -68,6 +69,7 @@ export default function ItemDetailPage() {
     }
     const queryClient = useQueryClient();
     const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null);
+    const [selectedPaymentType, setSelectedPaymentType] = useState<PaymentType | null>(null);
 
     const mutation = useMutation({
         mutationFn: requestBorrowingApi,
@@ -90,9 +92,9 @@ export default function ItemDetailPage() {
         const payload: BorrowRequestType = {
             item_id: item?.id ?? 0,
             item_variant_id: selectedVariantId,
-            warehouse_id: item.warehouse_id || 1, 
+            warehouse_id: item.warehouse_id || 1,
             quantity: value,
-            payment_type: "full_payment",
+            payment_type: selectedPaymentType ?? 'full_payment',
             due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
             notes: "",
         };
@@ -189,10 +191,9 @@ export default function ItemDetailPage() {
                         {item.variants.map((v) => (
                             <Card
                                 key={v.id}
-                                // Tambahkan logic class untuk menandai varian yang dipilih
                                 className={`m-0 cursor-pointer transition-all border-2 ${selectedVariantId === v.id
-                                        ? 'border-primary bg-primary/5'
-                                        : 'border-transparent'
+                                    ? 'border-primary bg-primary/5'
+                                    : 'border-transparent'
                                     }`}
                                 onClick={() => setSelectedVariantId(v.id)}
                             >
@@ -212,6 +213,29 @@ export default function ItemDetailPage() {
                             onPlus={increase}
                             onMinus={decrease}
                         />
+                    </div>
+
+                    <h1 className='font-bold text-xl mb-4'>Pilih Pembayaran</h1>
+                    <div className='grid grid-cols-2 gap-2 mb-4'>
+
+                        <Card
+                            className={`m-0 cursor-pointer transition-all border-2 ${selectedPaymentType === "full_payment"
+                                ? 'border-primary bg-primary/5'
+                                : 'border-transparent'
+                                }`}
+                            onClick={() => setSelectedPaymentType("full_payment")}
+                        >
+                            <p className="font-semibold">Full</p>
+                        </Card>
+                        <Card
+                            className={`m-0 cursor-pointer transition-all border-2 ${selectedPaymentType === "deposit_payment"
+                                ? 'border-primary bg-primary/5'
+                                : 'border-transparent'
+                                }`}
+                            onClick={() => setSelectedPaymentType("deposit_payment")}
+                        >
+                            <p className="font-semibold">DP</p>
+                        </Card>
                     </div>
 
                     <div className="flex gap-x-3">

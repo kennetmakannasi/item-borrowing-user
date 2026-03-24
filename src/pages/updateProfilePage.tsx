@@ -12,7 +12,7 @@ import { useAuth } from '../context/authContext';
 import { useToast } from '../context/toastContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from '@tanstack/react-router';
-import { updateProfileSchema, type UpdateProfileType } from '../interfaces/profile';
+import { updateProfileSchema, type UpdateProfileType } from '../interfaces/schemas/profile';
 import { updateProfileApi } from '../api/profile';
 import { Icon } from '@iconify/react';
 

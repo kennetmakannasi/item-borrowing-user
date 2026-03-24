@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UpdateProfileRouteImport } from './routes/update-profile'
 import { Route as ItemRouteImport } from './routes/item'
+import { Route as BorrowingDetailsRouteImport } from './routes/borrowing-details'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as MainRouteImport } from './routes/_main'
 import { Route as MainIndexRouteImport } from './routes/_main/index'
@@ -30,6 +31,11 @@ const UpdateProfileRoute = UpdateProfileRouteImport.update({
 const ItemRoute = ItemRouteImport.update({
   id: '/item',
   path: '/item',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BorrowingDetailsRoute = BorrowingDetailsRouteImport.update({
+  id: '/borrowing-details',
+  path: '/borrowing-details',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -85,6 +91,7 @@ const MainFavoriteRoute = MainFavoriteRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof MainIndexRoute
   '/auth': typeof AuthRouteWithChildren
+  '/borrowing-details': typeof BorrowingDetailsRoute
   '/item': typeof ItemRoute
   '/update-profile': typeof UpdateProfileRoute
   '/favorite': typeof MainFavoriteRoute
@@ -97,6 +104,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
+  '/borrowing-details': typeof BorrowingDetailsRoute
   '/item': typeof ItemRoute
   '/update-profile': typeof UpdateProfileRoute
   '/favorite': typeof MainFavoriteRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_main': typeof MainRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
+  '/borrowing-details': typeof BorrowingDetailsRoute
   '/item': typeof ItemRoute
   '/update-profile': typeof UpdateProfileRoute
   '/_main/favorite': typeof MainFavoriteRoute
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/borrowing-details'
     | '/item'
     | '/update-profile'
     | '/favorite'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
+    | '/borrowing-details'
     | '/item'
     | '/update-profile'
     | '/favorite'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_main'
     | '/auth'
+    | '/borrowing-details'
     | '/item'
     | '/update-profile'
     | '/_main/favorite'
@@ -169,6 +181,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   MainRoute: typeof MainRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
+  BorrowingDetailsRoute: typeof BorrowingDetailsRoute
   ItemRoute: typeof ItemRoute
   UpdateProfileRoute: typeof UpdateProfileRoute
 }
@@ -187,6 +200,13 @@ declare module '@tanstack/react-router' {
       path: '/item'
       fullPath: '/item'
       preLoaderRoute: typeof ItemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/borrowing-details': {
+      id: '/borrowing-details'
+      path: '/borrowing-details'
+      fullPath: '/borrowing-details'
+      preLoaderRoute: typeof BorrowingDetailsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -297,6 +317,7 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   MainRoute: MainRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
+  BorrowingDetailsRoute: BorrowingDetailsRoute,
   ItemRoute: ItemRoute,
   UpdateProfileRoute: UpdateProfileRoute,
 }

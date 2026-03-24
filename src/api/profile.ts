@@ -1,5 +1,5 @@
 import { api } from "../utils/api";
-import type { UpdateProfileType } from "../interfaces/profile";
+import type { UpdateProfileType } from "../interfaces/schemas/profile";
 import type { GeneralResponse } from "../interfaces/generalResponse";
 import type { UserProfile } from "../interfaces/auth";
 

@@ -39,9 +39,7 @@ export default function HistoryPage() {
             <div className='grid grid-cols-1 gap-5 px-5'>
                 {data?.data.map((item, index) => (
                     <BorrowingHistoryCard
-                        item={item}
-                        onClick={() => handleOpenModal(item)}
-                    />
+                        item={item}                    />
                 ))}
             </div>
             <Sheet
