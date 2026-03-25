@@ -7,10 +7,10 @@ import {
 } from 'konsta/react';
 import { useState, type KeyboardEvent } from 'react';
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
 import { getItemsApi } from '../api/item';
 import ItemCard from '../components/custom/itemCard';
 import CategoryList from '../components/custom/categoryList';
+import { Icon } from '@iconify/react';
 
 export default function MainPage() {
     const navigate = useNavigate();
@@ -41,7 +41,7 @@ export default function MainPage() {
                     bgMaterial: 'bg-white shadow-md'
                 }}
             >
-                <div className='px-4 w-full'>
+                <div className='px-4 w-full flex justify-between gap-x-3'>
                     <input
                         type='text'
                         value={inputValue}
@@ -50,6 +50,12 @@ export default function MainPage() {
                         onKeyDown={handleSearch}
                         className='w-full px-5 py-3 rounded-full border-2 border-gray-200 transition-all outline-none '
                     />
+                    <button onClick={() => navigate({
+                        to: '/notifications',
+                        replace: true
+                    })} className='w-10 flex items-center justify-center text-gray-500'>
+                        <Icon height={30} icon={'ion:notifications-outline'} />
+                    </button>
                 </div>
             </Navbar>
             {isLoading && (
@@ -59,10 +65,10 @@ export default function MainPage() {
             {isError && (
                 <Block className="text-center text-red-500">Gagal mengambil data.</Block>
             )}
-            <CategoryList/>
+            <CategoryList />
             <div className='grid grid-cols-2 gap-5 px-5'>
                 {data?.data.map((item, index) => (
-                    <ItemCard key={index} item={item}/>
+                    <ItemCard key={index} item={item} />
                 ))}
             </div>
         </Page>

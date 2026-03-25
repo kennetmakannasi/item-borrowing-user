@@ -20,6 +20,7 @@ import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as MainSearchRouteImport } from './routes/_main/search'
 import { Route as MainProfileRouteImport } from './routes/_main/profile'
+import { Route as MainNotificationsRouteImport } from './routes/_main/notifications'
 import { Route as MainHistoryRouteImport } from './routes/_main/history'
 import { Route as MainFavoriteRouteImport } from './routes/_main/favorite'
 
@@ -77,6 +78,11 @@ const MainProfileRoute = MainProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => MainRoute,
 } as any)
+const MainNotificationsRoute = MainNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => MainRoute,
+} as any)
 const MainHistoryRoute = MainHistoryRouteImport.update({
   id: '/history',
   path: '/history',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/update-profile': typeof UpdateProfileRoute
   '/favorite': typeof MainFavoriteRoute
   '/history': typeof MainHistoryRoute
+  '/notifications': typeof MainNotificationsRoute
   '/profile': typeof MainProfileRoute
   '/search': typeof MainSearchRoute
   '/auth/login': typeof AuthLoginRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/update-profile': typeof UpdateProfileRoute
   '/favorite': typeof MainFavoriteRoute
   '/history': typeof MainHistoryRoute
+  '/notifications': typeof MainNotificationsRoute
   '/profile': typeof MainProfileRoute
   '/search': typeof MainSearchRoute
   '/auth/login': typeof AuthLoginRoute
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/update-profile': typeof UpdateProfileRoute
   '/_main/favorite': typeof MainFavoriteRoute
   '/_main/history': typeof MainHistoryRoute
+  '/_main/notifications': typeof MainNotificationsRoute
   '/_main/profile': typeof MainProfileRoute
   '/_main/search': typeof MainSearchRoute
   '/auth/login': typeof AuthLoginRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
     | '/update-profile'
     | '/favorite'
     | '/history'
+    | '/notifications'
     | '/profile'
     | '/search'
     | '/auth/login'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/update-profile'
     | '/favorite'
     | '/history'
+    | '/notifications'
     | '/profile'
     | '/search'
     | '/auth/login'
@@ -170,6 +181,7 @@ export interface FileRouteTypes {
     | '/update-profile'
     | '/_main/favorite'
     | '/_main/history'
+    | '/_main/notifications'
     | '/_main/profile'
     | '/_main/search'
     | '/auth/login'
@@ -265,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainProfileRouteImport
       parentRoute: typeof MainRoute
     }
+    '/_main/notifications': {
+      id: '/_main/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof MainNotificationsRouteImport
+      parentRoute: typeof MainRoute
+    }
     '/_main/history': {
       id: '/_main/history'
       path: '/history'
@@ -285,6 +304,7 @@ declare module '@tanstack/react-router' {
 interface MainRouteChildren {
   MainFavoriteRoute: typeof MainFavoriteRoute
   MainHistoryRoute: typeof MainHistoryRoute
+  MainNotificationsRoute: typeof MainNotificationsRoute
   MainProfileRoute: typeof MainProfileRoute
   MainSearchRoute: typeof MainSearchRoute
   MainIndexRoute: typeof MainIndexRoute
@@ -293,6 +313,7 @@ interface MainRouteChildren {
 const MainRouteChildren: MainRouteChildren = {
   MainFavoriteRoute: MainFavoriteRoute,
   MainHistoryRoute: MainHistoryRoute,
+  MainNotificationsRoute: MainNotificationsRoute,
   MainProfileRoute: MainProfileRoute,
   MainSearchRoute: MainSearchRoute,
   MainIndexRoute: MainIndexRoute,

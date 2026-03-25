@@ -6,6 +6,7 @@ import './index.css'
 import { ToastProvider } from './context/toastContext';
 import { AuthProvider } from './context/authContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SSEProvider } from './context/streamSSEContext';
 
 const router = createRouter({ routeTree });
 const queryClient = new QueryClient();
@@ -24,9 +25,11 @@ if (!rootElement.innerHTML) {
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <ToastProvider>
-            <RouterProvider router={router} />
-          </ToastProvider>
+          <SSEProvider>
+            <ToastProvider>
+              <RouterProvider router={router} />
+            </ToastProvider>
+          </SSEProvider>
         </AuthProvider>
       </QueryClientProvider>
     </React.StrictMode>
