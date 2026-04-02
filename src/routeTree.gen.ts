@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UpdateProfileRouteImport } from './routes/update-profile'
+import { Route as QrScanRouteImport } from './routes/qr-scan'
 import { Route as ItemRouteImport } from './routes/item'
 import { Route as BorrowingDetailsRouteImport } from './routes/borrowing-details'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -27,6 +28,11 @@ import { Route as MainFavoriteRouteImport } from './routes/_main/favorite'
 const UpdateProfileRoute = UpdateProfileRouteImport.update({
   id: '/update-profile',
   path: '/update-profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QrScanRoute = QrScanRouteImport.update({
+  id: '/qr-scan',
+  path: '/qr-scan',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ItemRoute = ItemRouteImport.update({
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/borrowing-details': typeof BorrowingDetailsRoute
   '/item': typeof ItemRoute
+  '/qr-scan': typeof QrScanRoute
   '/update-profile': typeof UpdateProfileRoute
   '/favorite': typeof MainFavoriteRoute
   '/history': typeof MainHistoryRoute
@@ -113,6 +120,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/borrowing-details': typeof BorrowingDetailsRoute
   '/item': typeof ItemRoute
+  '/qr-scan': typeof QrScanRoute
   '/update-profile': typeof UpdateProfileRoute
   '/favorite': typeof MainFavoriteRoute
   '/history': typeof MainHistoryRoute
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRouteWithChildren
   '/borrowing-details': typeof BorrowingDetailsRoute
   '/item': typeof ItemRoute
+  '/qr-scan': typeof QrScanRoute
   '/update-profile': typeof UpdateProfileRoute
   '/_main/favorite': typeof MainFavoriteRoute
   '/_main/history': typeof MainHistoryRoute
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/borrowing-details'
     | '/item'
+    | '/qr-scan'
     | '/update-profile'
     | '/favorite'
     | '/history'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/borrowing-details'
     | '/item'
+    | '/qr-scan'
     | '/update-profile'
     | '/favorite'
     | '/history'
@@ -178,6 +189,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/borrowing-details'
     | '/item'
+    | '/qr-scan'
     | '/update-profile'
     | '/_main/favorite'
     | '/_main/history'
@@ -195,6 +207,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   BorrowingDetailsRoute: typeof BorrowingDetailsRoute
   ItemRoute: typeof ItemRoute
+  QrScanRoute: typeof QrScanRoute
   UpdateProfileRoute: typeof UpdateProfileRoute
 }
 
@@ -205,6 +218,13 @@ declare module '@tanstack/react-router' {
       path: '/update-profile'
       fullPath: '/update-profile'
       preLoaderRoute: typeof UpdateProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/qr-scan': {
+      id: '/qr-scan'
+      path: '/qr-scan'
+      fullPath: '/qr-scan'
+      preLoaderRoute: typeof QrScanRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/item': {
@@ -340,6 +360,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   BorrowingDetailsRoute: BorrowingDetailsRoute,
   ItemRoute: ItemRoute,
+  QrScanRoute: QrScanRoute,
   UpdateProfileRoute: UpdateProfileRoute,
 }
 export const routeTree = rootRouteImport

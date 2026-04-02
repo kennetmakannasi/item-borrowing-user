@@ -5,7 +5,7 @@ import {
     Page,
     Block,
 } from 'konsta/react';
-import { useState, type KeyboardEvent } from 'react';
+import { useEffect, useState, type KeyboardEvent } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { getItemsApi } from '../api/item';
 import ItemCard from '../components/custom/itemCard';
@@ -16,6 +16,7 @@ export default function MainPage() {
     const navigate = useNavigate();
     const [inputValue, setInputValue] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
     function handleSearch(event: KeyboardEvent<HTMLInputElement>) {
         if (event.key === 'Enter') {
@@ -30,9 +31,17 @@ export default function MainPage() {
     }
 
     const { data, isLoading, isError } = useQuery({
-        queryKey: ['items', currentPage],
-        queryFn: () => getItemsApi(currentPage),
+        queryKey: ['items', currentPage, selectedCategoryId],
+        queryFn: () => getItemsApi({
+            page: currentPage,
+            categoryId: selectedCategoryId
+        }),
     });
+
+    const handleCategory = (data: number | null) => {
+        setSelectedCategoryId(data);
+        setCurrentPage(1);
+    }
 
     return (
         <Page>
@@ -62,15 +71,26 @@ export default function MainPage() {
                 <Block className="text-center">Memuat barang...</Block>
             )}
 
-            {isError && (
-                <Block className="text-center text-red-500">Gagal mengambil data.</Block>
-            )}
-            <CategoryList />
-            <div className='grid grid-cols-2 gap-5 px-5'>
-                {data?.data.map((item, index) => (
-                    <ItemCard key={index} item={item} />
-                ))}
+            <div className='w-full px-5 pt-2'>
+                <div className='bg-white shadow-md w-full rounded-xl p-4'>
+                    <button onClick={() => navigate({
+                        to: '/qr-scan',
+                        replace: true
+                    })}>
+                        Scan Qr Barang
+                    </button>
+                </div>
             </div>
+            <CategoryList onClick={handleCategory} selectedCategoryId={selectedCategoryId} />
+            {isError ? (
+                <Block className="text-center text-red-500">Gagal mengambil data.</Block>
+            ) : (
+                <div className='grid grid-cols-2 gap-5 px-5'>
+                    {data?.data.map((item, index) => (
+                        <ItemCard key={index} item={item} />
+                    ))}
+                </div>
+            )}
         </Page>
     )
 }

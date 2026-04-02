@@ -12,20 +12,22 @@ import {
     Sheet,
     Block,
     NavbarBackLink,
-    List,
-    ListInput,
     Card
 } from 'konsta/react';
 import { useToast } from "../context/toastContext";
 import { useState } from "react";
+import { QRCodeSVG } from 'qrcode.react';
+import { useAuth } from '../context/authContext';
 
 export default function BorrowingDetailPage() {
     const { showToast } = useToast();
     const { history } = useRouter();
     const location = useLocation();
     const borrowingId = (location.state as { id: number })?.id;
+    const { user } = useAuth()
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isQRModalOpen, setIsQRModalOpen] = useState(false);
     const [returnedCondition, setReturnedCondition] = useState(null);
     const [evidenceFile, setEvidenceFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -110,6 +112,13 @@ export default function BorrowingDetailPage() {
 
     if (isLoading) return <Page><Block className="text-center">Memuat...</Block></Page>;
 
+    const qrDataRaw = borrowingData ? {
+        borrowing_id: borrowingData.id,
+        user_id: user?.id
+    } : null
+
+    const qrData = JSON.stringify(qrDataRaw)
+
     return (
         <Page>
             <Navbar
@@ -132,6 +141,7 @@ export default function BorrowingDetailPage() {
                     <p className='text-gray-500'>Tgl Pinjam:</p>
                     <p>{new Date(borrowingData?.borrow_date!).toLocaleString("id-ID")}</p>
                 </div>
+                <Button rounded className='mt-2' onClick={() => setIsQRModalOpen(!isQRModalOpen)}>Tampilkan QR Peminjaman</Button>
 
                 <h1 className='font-semibold text-xl my-5'>Barang</h1>
                 <div className='m-0 p-4 border border-gray-200 rounded-xl shadow-md'>
@@ -261,8 +271,6 @@ export default function BorrowingDetailPage() {
                         )}
                     </Block>
 
-
-
                     <Block className="mt-8">
                         <Button
                             large
@@ -274,6 +282,27 @@ export default function BorrowingDetailPage() {
                         </Button>
                     </Block>
                 </div>
+            </Sheet>
+            <Sheet
+                opened={isQRModalOpen}
+                onBackdropClick={() => setIsQRModalOpen(false)}
+            >
+                <p className='text-center pt-4 font-semibold text-xl'>Kode QR Peminjaman</p>
+                <p className='text-center mt-2'>QR ini dapat dipakai untuk staff menyetujui peminjaman atau pengembalian</p>
+                <QRCodeSVG className='mx-auto'
+                    value={qrData}
+                    level="H"
+                    includeMargin={true}
+                    style={{ width: '100%', height: 'auto' }}
+                    imageSettings={{
+                        src: '',
+                        x: undefined,
+                        y: undefined,
+                        height: 0,
+                        width: 0,
+                        excavate: true,
+                    }}
+                />
             </Sheet>
         </Page>
     );

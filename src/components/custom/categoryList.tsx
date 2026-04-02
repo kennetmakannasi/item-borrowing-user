@@ -2,7 +2,12 @@ import { Badge } from "konsta/react";
 import { useQuery } from "@tanstack/react-query";
 import { getCategoriesApi } from "../../api/categories";
 
-export default function CategoryList() {
+interface CategoryListProps {
+    onClick: (id: number | null) => void;
+    selectedCategoryId?: number | null
+}
+
+export default function CategoryList({ onClick, selectedCategoryId }: CategoryListProps) {
     const { data, isLoading, isError } = useQuery({
         queryKey: ['categories'],
         queryFn: () => getCategoriesApi(1),
@@ -10,24 +15,33 @@ export default function CategoryList() {
 
     if (isLoading) return <div className="h-10 animate-pulse bg-gray-200 rounded-lg m-4" />;
 
+    const active = { bg: 'bg-primary', text: 'text-white' }
+    const inActive = { bg: 'bg-white', text: 'text-gray-700' }
+
     return (
         <div className="relative">
             <div className="flex gap-x-2 overflow-x-auto py-4 px-4 no-scrollbar scroll-smooth snap-x">
-                <Badge 
-                    className="py-2 px-4 cursor-pointer snap-start flex-shrink-0" 
-                    colors={{ bg: 'bg-primary', text: 'text-white' }}
-                >
-                    Semua
-                </Badge>
+                <button onClick={() => onClick(null)}>
+                    <Badge
+                        className="py-2 px-4 cursor-pointer snap-start flex-shrink-0"
+                        colors={selectedCategoryId ? inActive : active}
+                    >
+                        Semua
+                    </Badge>
+                </button>
+
 
                 {data?.data?.map((item) => (
-                    <Badge 
-                        key={item.id} 
-                        className="py-2 px-4 cursor-pointer snap-start flex-shrink-0 border border-gray-200"
-                        colors={{ bg: 'bg-white', text: 'text-gray-700' }}
-                    >
-                        {item.name}
-                    </Badge>
+                    <button onClick={() => onClick(item.id)}>
+                        <Badge
+                            key={item.id}
+                            className="py-2 px-4 cursor-pointer snap-start flex-shrink-0 border border-gray-200"
+                            colors={selectedCategoryId === item.id ? active : inActive}
+                        >
+                            {item.name}
+                        </Badge>
+                    </button>
+
                 ))}
             </div>
         </div>
