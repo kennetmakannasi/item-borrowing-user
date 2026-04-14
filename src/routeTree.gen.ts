@@ -19,6 +19,8 @@ import { Route as MainIndexRouteImport } from './routes/_main/index'
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AuthInviteRouteImport } from './routes/auth/invite'
+import { Route as MainSearchResultRouteImport } from './routes/_main/search-result'
 import { Route as MainSearchRouteImport } from './routes/_main/search'
 import { Route as MainProfileRouteImport } from './routes/_main/profile'
 import { Route as MainNotificationsRouteImport } from './routes/_main/notifications'
@@ -74,6 +76,16 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthInviteRoute = AuthInviteRouteImport.update({
+  id: '/invite',
+  path: '/invite',
+  getParentRoute: () => AuthRoute,
+} as any)
+const MainSearchResultRoute = MainSearchResultRouteImport.update({
+  id: '/search-result',
+  path: '/search-result',
+  getParentRoute: () => MainRoute,
+} as any)
 const MainSearchRoute = MainSearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -112,6 +124,8 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof MainNotificationsRoute
   '/profile': typeof MainProfileRoute
   '/search': typeof MainSearchRoute
+  '/search-result': typeof MainSearchResultRoute
+  '/auth/invite': typeof AuthInviteRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
@@ -127,6 +141,8 @@ export interface FileRoutesByTo {
   '/notifications': typeof MainNotificationsRoute
   '/profile': typeof MainProfileRoute
   '/search': typeof MainSearchRoute
+  '/search-result': typeof MainSearchResultRoute
+  '/auth/invite': typeof AuthInviteRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
@@ -145,6 +161,8 @@ export interface FileRoutesById {
   '/_main/notifications': typeof MainNotificationsRoute
   '/_main/profile': typeof MainProfileRoute
   '/_main/search': typeof MainSearchRoute
+  '/_main/search-result': typeof MainSearchResultRoute
+  '/auth/invite': typeof AuthInviteRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
@@ -164,6 +182,8 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/search'
+    | '/search-result'
+    | '/auth/invite'
     | '/auth/login'
     | '/auth/register'
     | '/auth/verify-email'
@@ -179,6 +199,8 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/search'
+    | '/search-result'
+    | '/auth/invite'
     | '/auth/login'
     | '/auth/register'
     | '/auth/verify-email'
@@ -196,6 +218,8 @@ export interface FileRouteTypes {
     | '/_main/notifications'
     | '/_main/profile'
     | '/_main/search'
+    | '/_main/search-result'
+    | '/auth/invite'
     | '/auth/login'
     | '/auth/register'
     | '/auth/verify-email'
@@ -283,6 +307,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/auth/invite': {
+      id: '/auth/invite'
+      path: '/invite'
+      fullPath: '/auth/invite'
+      preLoaderRoute: typeof AuthInviteRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_main/search-result': {
+      id: '/_main/search-result'
+      path: '/search-result'
+      fullPath: '/search-result'
+      preLoaderRoute: typeof MainSearchResultRouteImport
+      parentRoute: typeof MainRoute
+    }
     '/_main/search': {
       id: '/_main/search'
       path: '/search'
@@ -327,6 +365,7 @@ interface MainRouteChildren {
   MainNotificationsRoute: typeof MainNotificationsRoute
   MainProfileRoute: typeof MainProfileRoute
   MainSearchRoute: typeof MainSearchRoute
+  MainSearchResultRoute: typeof MainSearchResultRoute
   MainIndexRoute: typeof MainIndexRoute
 }
 
@@ -336,18 +375,21 @@ const MainRouteChildren: MainRouteChildren = {
   MainNotificationsRoute: MainNotificationsRoute,
   MainProfileRoute: MainProfileRoute,
   MainSearchRoute: MainSearchRoute,
+  MainSearchResultRoute: MainSearchResultRoute,
   MainIndexRoute: MainIndexRoute,
 }
 
 const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
 
 interface AuthRouteChildren {
+  AuthInviteRoute: typeof AuthInviteRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
   AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
+  AuthInviteRoute: AuthInviteRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
   AuthVerifyEmailRoute: AuthVerifyEmailRoute,

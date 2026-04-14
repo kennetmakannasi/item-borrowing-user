@@ -1,52 +1,109 @@
-import { useLocation, useNavigate } from "@tanstack/react-router";
-import { Page, Navbar, NavbarBackLink, Block, List, ListItem } from "konsta/react";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useState, useEffect, type KeyboardEvent } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { Page, Navbar, NavbarBackLink, Block, List, ListItem, Searchbar } from "konsta/react";
 import { searchItemApi } from "../api/item";
-import ItemCard from "../components/custom/itemCard";
+import { useQuery } from "@tanstack/react-query";
+import { Icon } from "@iconify/react";
 
 export default function SearchPage() {
-    const location = useLocation();
     const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState("");
+    const [debouncedQuery, setDebouncedQuery] = useState("");
 
-    const keyword = (location.state as any)?.keyword;
+    function handleSearch(event: KeyboardEvent<HTMLInputElement>) {
+        if (event.key === 'Enter') {
+            navigate({
+                to: '/search-result',
+                state: (prev) => ({
+                    ...prev,
+                    keyword: searchQuery
+                })
+            })
+        }
+    }
 
     useEffect(() => {
-        if (!keyword) {
-            navigate({ to: '/', replace: true });
-        }
-    }, [keyword, navigate]);
+        const handler = setTimeout(() => {
+            setDebouncedQuery(searchQuery);
+        }, 500);
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [searchQuery]);
 
-    const { data, isLoading, isError } = useQuery({
-        queryKey: ['items', 'search', keyword],
-        queryFn: () => searchItemApi(keyword),
-        enabled: !!keyword, 
+    const { data: suggestions, isLoading } = useQuery({
+        queryKey: ['items', 'suggestion', debouncedQuery],
+        queryFn: () => searchItemApi(debouncedQuery),
+        enabled: debouncedQuery.length > 2,
     });
+
+    const handleSearchSubmit = (value: string) => {
+        if (!value.trim()) return;
+        navigate({
+            to: '/search-result', // Arahkan ke halaman hasil
+            state: { keyword: value }
+        });
+    };
 
     return (
         <Page>
             <Navbar
-                title="Hasil Pencarian"
-                left={<NavbarBackLink onClick={() => history.go(-1)} />}
-            />
-            {isLoading && (
-                <Block className="text-center">Memuat barang...</Block>
-            )}
+                colors={{
+                    bgMaterial: 'bg-white shadow-md'
+                }}
+            >
+                <div className='px-4 w-full flex justify-between gap-x-3'>
+                    <input
+                        type='text'
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder='Cari'
+                        onKeyDown={handleSearch}
+                        className='w-full px-5 py-3 rounded-full border-2 border-gray-200 transition-all outline-none '
+                    />
+                </div>
+            </Navbar>
 
-            {isError && (
-                <Block className="text-center text-red-500">Gagal mengambil data.</Block>
-            )}
+            <div className="p-4">
+                {isLoading && searchQuery.length > 2 && (
+                    <ListItem title="Mencari saran..." />
+                )}
 
-            <div className='grid grid-cols-2 gap-5 px-5'>
-                {data?.data.map((item, index) => (
-                    <ItemCard key={index} item={item}/>
-                ))}
+                {suggestions?.data && suggestions.data.length > 0 ? (
+                    suggestions.data.map((item: any) => (
+                        <button
+                            onClick={() => handleSearchSubmit(item.name)}
+                            className="flex px-2 py-3 space-x-2 items-center"
+                            key={item.id}
+                        >
+                            <Icon height={20} icon={"material-symbols:search-rounded"} />
+                            <p>{item.name}</p>
+                        </button>
+                        // <ListItem
+                        //     key={item.id}
+                        //     link
+                        //     title={item.name}
+                        //     after={<span className="text-xs text-gray-400">Pilih</span>}
+                        //     onClick={() => handleSearchSubmit(item.name)}
+                        // />
+                    ))
+                ) : (
+                    debouncedQuery.length > 2 && !isLoading && (
+                        <ListItem
+                            title={`Cari "${searchQuery}"`}
+                            link
+                            onClick={() => handleSearchSubmit(searchQuery)}
+                        />
+                    )
+                )}
             </div>
 
-            {/* Empty State */}
-            {data?.data.length === 0 && !isLoading && (
-                <Block className="text-center text-gray-500">
-                    Barang "{keyword}" tidak ditemukan.
+            {!searchQuery && (
+                <Block className="text-gray-500 pt-20">
+                    <div className="size-full flex items-center justify-center">
+                        <Icon height={80} icon={"material-symbols:search-rounded"} />
+                    </div>
+                    <p className="text-center">Mulai masukan kata pencarian</p>
                 </Block>
             )}
         </Page>

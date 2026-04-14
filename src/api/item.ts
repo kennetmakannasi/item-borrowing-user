@@ -26,8 +26,8 @@ export async function getItemDetailApi(id: number): Promise<ItemDetailResponse> 
     return response.data;
 };
 
-export async function searchItemApi(keyword: string): Promise<ItemListResponse> {
-    const response = await api.get<ItemListResponse>(`/api/items/search?q=${keyword}`);
+export async function searchItemApi(keyword: string, page: number): Promise<ItemListResponse> {
+    const response = await api.get<ItemListResponse>(`/api/items?q=${keyword}&page=${page}`);
     return response.data;
 };
 

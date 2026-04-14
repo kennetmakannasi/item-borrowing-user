@@ -21,7 +21,7 @@ export interface User {
     id: number;
     user_name: string;
     display_name: string;
-    email: string;role: string;
+    email: string; role: string;
 }
 
 export interface LoginData {
@@ -39,10 +39,23 @@ export interface UserProfile {
     email: string;
     user_name: string;
     display_name: string;
-    status: 'active' | 'inactive'; 
-    warehouse_id: number | null;   
-    avatar: string | null;       
-    role: string  
+    status: 'active' | 'inactive';
+    warehouse_id: number | null;
+    avatar: string | null;
+    role: string
+}
+
+export interface InvitationProfile {
+    id: number;
+    email: string;
+    user_name: string;
+    display_name: string;
+    status: 'active' | 'inactive';
+}
+
+export interface ActivationRequest {
+    jwt: string;
+    password: string;
 }
 
 export type LoginResponse = GeneralResponse<LoginData>;

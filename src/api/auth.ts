@@ -1,4 +1,4 @@
-import type { LoginRequest, LoginResponse, ProfileResponse, RegisterRequest, RegisterResponse, User, UserProfile, VerifyEmailRequest, VerifyEmailResponse } from "../interfaces/auth";
+import type { ActivationRequest, InvitationProfile, LoginRequest, LoginResponse, ProfileResponse, RegisterRequest, RegisterResponse, User, UserProfile, VerifyEmailRequest, VerifyEmailResponse } from "../interfaces/auth";
 import type { GeneralResponse } from "../interfaces/generalResponse";
 import { api } from "../utils/api";
 import useError from "../utils/useError";
@@ -35,6 +35,20 @@ export const registerApi = async (data: RegisterRequest): Promise<RegisterRespon
     }
 };
 
+export const activateAccountApi = async (data: ActivationRequest): Promise<GeneralResponse<void>> => {
+    try {
+        const response = await api.post<GeneralResponse<void>>(`auth/register/activation`, data);
+        return response.data;
+    } catch (error: any) {
+        console.error('Activation Error:', error);
+        return useError({
+            code: error.response?.status ?? 500,
+            message: error.response?.data?.message ?? error.message ?? "Aktivasi Gagal",
+            data: null
+        });
+    }
+};
+
 export const verifyEmailApi = async (data: VerifyEmailRequest): Promise<VerifyEmailResponse> => {
     try {
         const response = await api.post<VerifyEmailResponse>(`auth/verify-email`, data);
@@ -49,6 +63,11 @@ export const verifyEmailApi = async (data: VerifyEmailRequest): Promise<VerifyEm
             data: null
         })
     }
+};
+
+export const getInvitationData = async (jwt: string): Promise<GeneralResponse<InvitationProfile>> => {
+    const response = await api.get<GeneralResponse<InvitationProfile>>(`/auth/register/activation/${jwt}`);
+    return response.data;
 };
 
 export const getProfileApi = async (): Promise<ProfileResponse> => {
