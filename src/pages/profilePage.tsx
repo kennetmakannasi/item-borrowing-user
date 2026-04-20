@@ -17,7 +17,7 @@ export default function ProfilePage() {
     }
 
     return (
-        <Page>
+        <>
             <Card className='bg-white shadow-md'>
                 <div className='flex gap-x-4 items-center'>
                     <img className='size-20 rounded-full object-cover' src={user?.avatar || '/placeholders/profile.png'} alt="" />
@@ -43,6 +43,7 @@ export default function ProfilePage() {
                     <p className='font-semibold'>Keluar</p>
                 </button>
             </Card>
-        </Page>
+        </>
+
     )
 }

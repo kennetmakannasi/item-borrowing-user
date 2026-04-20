@@ -144,7 +144,7 @@ export default function ItemDetailPage() {
     if (isError || !item) return <Page><Block className="text-center text-red-500">Gagal mengambil data atau barang tidak ditemukan.</Block></Page>;
 
     return (
-        <Page>
+        <>
             <Navbar
                 className="top-0 fixed"
                 left={
@@ -223,11 +223,11 @@ export default function ItemDetailPage() {
             </div>
 
             <div className='w-full bg-white/60 dark:bg-black/60 backdrop-blur-md bottom-0 left-0 fixed rounded-t-xl p-5'>
-
                 <Button onClick={() => setIsModalOpen(true)} className='rounded-full h-12'>Pinjam Sekarang</Button>
             </div>
 
             <Sheet
+
                 opened={isModalOpen}
                 onBackdropClick={() => setIsModalOpen(false)}
             >
@@ -312,6 +312,6 @@ export default function ItemDetailPage() {
                     </div>
                 </Block>
             </Sheet>
-        </Page>
+        </>
     );
 }

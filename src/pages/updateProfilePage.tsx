@@ -62,7 +62,7 @@ export default function UpdateProfilePage() {
     };
 
     return (
-        <Page>
+        <>
             <Navbar
                 title="Edit Profil"
                 centerTitle={true}
@@ -139,6 +139,6 @@ export default function UpdateProfilePage() {
                     </Button>
                 </Block>
             </form>
-        </Page>
+        </>
     );
 }

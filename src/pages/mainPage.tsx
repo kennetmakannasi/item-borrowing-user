@@ -70,10 +70,11 @@ export default function MainPage() {
 
 
     return (
-        <Page>
+        <>
             <Navbar
+                bgClassName='border-t border-2 border-gray-200 dark:border-gray-700'
                 colors={{
-                    bgMaterial: 'bg-white shadow-md'
+                    bgMaterial: 'bg-white'
                 }}
             >
 
@@ -83,7 +84,7 @@ export default function MainPage() {
                         replace: true
                     })} className='w-10 flex items-center justify-center text-gray-500'>
                         <Icon height={30} icon={'boxicons:qr'} />
-                    </button>   
+                    </button>
                     <button onClick={() => navigate({
                         to: '/search',
                         replace: true
@@ -115,7 +116,7 @@ export default function MainPage() {
             ) : (
                 <div className='grid grid-cols-2 gap-5 px-5'>
                     {isLoading ? (
-                                                Array.from({ length: 6 }).map((_, index) => (
+                        Array.from({ length: 6 }).map((_, index) => (
                             <ItemCardSkeleton key={`skeleton-${index}`} />
                         ))
                     ) : (
@@ -128,6 +129,6 @@ export default function MainPage() {
             {!isLoading && pageInfo?.has_next_page &&
                 <div className='mb-20' ref={ref}>load</div>
             }
-        </Page>
+        </>
     )
 }

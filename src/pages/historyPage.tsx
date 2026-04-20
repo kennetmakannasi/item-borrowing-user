@@ -1,17 +1,17 @@
 import {
-    Navbar,
-    Card,
     BlockTitle,
     Page,
     Sheet,
     Block,
     Badge,
 } from 'konsta/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from "@tanstack/react-query";
+import { useInView } from 'react-intersection-observer';
 import { getBorrowingHistoryApi } from '../api/borrowing';
 import BorrowingHistoryCard from '../components/custom/borrowingCard';
-import type { BorrowHistoryItem } from '../interfaces/borrowing';
+import type { BorrowHistoryItem, BorrowHistoryResponse } from '../interfaces/borrowing';
+import type { Pagination } from '../interfaces/generalResponse';
 import BorrowingHistoryCardSkeleton from '../components/custom/borrowingHistoryCardSkeleton';
 import { borrowingStatusMapper } from '../utils/statusMappers';
 
@@ -19,16 +19,34 @@ export default function HistoryPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedData, setSelectedData] = useState<BorrowHistoryItem | null>();
+    const [historyItems, setHistoryItems] = useState<BorrowHistoryItem[]>([]);
+    const [pageInfo, setPageInfo] = useState<Pagination | null>(null);
+    const { ref, inView } = useInView({ threshold: 0 });
 
-    const { data, isLoading, isError } = useQuery({
+    const { data, isLoading } = useQuery<BorrowHistoryResponse>({
         queryKey: ['borrowings', currentPage],
         queryFn: () => getBorrowingHistoryApi(currentPage),
     });
 
-    function handleOpenModal(data) {
-        setSelectedData(data);
-        setIsModalOpen(true);
-    }
+    useEffect(() => {
+        if (!data) return;
+
+        if (currentPage === 1) {
+            setHistoryItems(data.data ?? []);
+        } else {
+            setHistoryItems((prev) => [
+                ...prev,
+                ...(data.data ?? []),
+            ]);
+        }
+        setPageInfo(data.pagination);
+    }, [data, currentPage]);
+
+    useEffect(() => {
+        if (inView && pageInfo?.has_next_page) {
+            setCurrentPage((prev) => prev + 1);
+        }
+    }, [inView, pageInfo]);
 
     function handleCloseModal() {
         setSelectedData(null);
@@ -39,14 +57,12 @@ export default function HistoryPage() {
         <Page>
             <BlockTitle>Histori</BlockTitle>
             <div className='grid grid-cols-1 gap-5 px-5'>
-                {isLoading ? (
-                    // Show skeleton loading cards
+                {historyItems.length === 0 && isLoading ? (
                     Array.from({ length: 5 }).map((_, index) => (
                         <BorrowingHistoryCardSkeleton key={`skeleton-${index}`} />
                     ))
                 ) : (
-                    // Show actual borrowing history items
-                    data?.data.map((item, index) => (
+                    historyItems.map((item, index) => (
                         <BorrowingHistoryCard
                             key={index}
                             item={item}
@@ -54,6 +70,11 @@ export default function HistoryPage() {
                     ))
                 )}
             </div>
+            {pageInfo?.has_next_page && (
+                <div ref={ref} className='mb-20 text-center text-sm text-gray-500'>
+                    {isLoading ? 'Memuat lebih banyak histori...' : 'Scroll untuk memuat lebih banyak'}
+                </div>
+            )}
             <div className='h-20'/>
             <Sheet
                 opened={isModalOpen}
@@ -75,7 +96,7 @@ export default function HistoryPage() {
                     </div>
                     <div className='flex justify-between'>
                         <p>Tanggal Peminjaman:</p>
-                        <p>{new Date(selectedData?.borrow_date).toLocaleString("id-ID")}</p>
+                        <p>{selectedData?.borrow_date ? new Date(selectedData.borrow_date).toLocaleString("id-ID") : '-'}</p>
                     </div>
                     <div className='flex justify-between'>
                         <p>Status Peminjaman:</p>

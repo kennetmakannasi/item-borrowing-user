@@ -24,7 +24,7 @@ export default function BottomNavigation() {
             {...({
                 labels: true,
                 icons: true,
-                bgClassName: "bg-white/60 dark:bg-black/60 backdrop-blur-md",
+                bgClassName: "bg-white/60 dark:bg-black/60 backdrop-blur-md border-t border-2 border-gray-200 dark:border-gray-700",
                 className: "left-0 bottom-0 fixed h-16 flex items-center"
             } as any)}
         >
