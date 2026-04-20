@@ -1,7 +1,7 @@
 import { createContext, useContext, type ReactNode } from 'react'; // Tambahkan createContext & useContext
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Cookies from 'js-cookie';
-import { getProfileApi } from '../api/auth';
+import { getProfileApi, logoutApi } from '../api/auth';
 import type { UserProfile } from '../interfaces/auth';
 
 interface AuthContextType {
@@ -37,11 +37,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    //nanti tambahin nembak endpoint logout be
-
     Cookies.remove('auth_token');
     queryClient.setQueryData(['authUser'], null); 
     queryClient.clear(); 
+    logoutApi();
   };
 
   return (

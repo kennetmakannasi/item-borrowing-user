@@ -12,6 +12,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getBorrowingHistoryApi } from '../api/borrowing';
 import BorrowingHistoryCard from '../components/custom/borrowingCard';
 import type { BorrowHistoryItem } from '../interfaces/borrowing';
+import BorrowingHistoryCardSkeleton from '../components/custom/borrowingHistoryCardSkeleton';
+import { borrowingStatusMapper } from '../utils/statusMappers';
 
 export default function HistoryPage() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -37,11 +39,22 @@ export default function HistoryPage() {
         <Page>
             <BlockTitle>Histori</BlockTitle>
             <div className='grid grid-cols-1 gap-5 px-5'>
-                {data?.data.map((item, index) => (
-                    <BorrowingHistoryCard
-                        item={item}                    />
-                ))}
+                {isLoading ? (
+                    // Show skeleton loading cards
+                    Array.from({ length: 5 }).map((_, index) => (
+                        <BorrowingHistoryCardSkeleton key={`skeleton-${index}`} />
+                    ))
+                ) : (
+                    // Show actual borrowing history items
+                    data?.data.map((item, index) => (
+                        <BorrowingHistoryCard
+                            key={index}
+                            item={item}
+                        />
+                    ))
+                )}
             </div>
+            <div className='h-20'/>
             <Sheet
                 opened={isModalOpen}
                 onBackdropClick={handleCloseModal}
@@ -66,7 +79,7 @@ export default function HistoryPage() {
                     </div>
                     <div className='flex justify-between'>
                         <p>Status Peminjaman:</p>
-                        <Badge className='p-1'>{selectedData?.status}</Badge>
+                        <Badge className='p-1'>{borrowingStatusMapper(selectedData?.status || '-')}</Badge>
                     </div>
 
                     <h1 className='font-semibold text-xl text-center my-5'>Detil Barang</h1>

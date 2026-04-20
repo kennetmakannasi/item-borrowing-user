@@ -65,7 +65,11 @@ export default function UpdateProfilePage() {
         <Page>
             <Navbar
                 title="Edit Profil"
+                centerTitle={true}
                 left={<NavbarBackLink onClick={() => history.go(-1)} />}
+                colors={{
+                    bgMaterial: 'bg-white'
+                }}
             />
 
             <form onSubmit={handleSubmit(onSubmit)} className='space-y-5'>
@@ -80,7 +84,7 @@ export default function UpdateProfilePage() {
                             alt="Avatar"
                         />
                         <div className="absolute inset-0 bg-black/30 flex items-center justify-center text-white">
-                            <Icon height={50} icon={"mdi-light:pencil"}/>
+                            <Icon height={50} icon={"mdi-light:pencil"} />
                         </div>
                     </div>
                     <input

@@ -66,12 +66,14 @@ export interface TransactionInfo {
   snap_token: string | null; 
   created_at: string;
   expired_at: string;
+  paid_at: string;
 }
 
 export interface ReturningInfo {
   id: number;
   returned_quantity: number;
   returned_condition: string;
+  returned_date: string;
   status: 'pending' | 'approved' | 'rejected';
 }
 

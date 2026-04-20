@@ -18,8 +18,12 @@ import { useToast } from "../context/toastContext";
 import { useState } from "react";
 import { QRCodeSVG } from 'qrcode.react';
 import { useAuth } from '../context/authContext';
+import useSubstring from '../utils/textFormatter';
+import { useNavigate } from '@tanstack/react-router';
+import { borrowingStatusMapper, returningStatusMapper, transactionStatusMapper } from '../utils/statusMappers';
 
 export default function BorrowingDetailPage() {
+    const navigate = useNavigate();
     const { showToast } = useToast();
     const { history } = useRouter();
     const location = useLocation();
@@ -40,6 +44,10 @@ export default function BorrowingDetailPage() {
         {
             name: "bad",
             label: "Rusak"
+        },
+        {
+            name: "lost",
+            label: "Hilang"
         }
     ]
 
@@ -134,8 +142,12 @@ export default function BorrowingDetailPage() {
                     <p className='font-medium'>{borrowingData?.id}</p>
                 </div>
                 <div className='flex justify-between'>
+                    <p className='text-gray-500'>Tipe Pembayaran:</p>
+                    <p className='font-medium'>{borrowingData?.payment_type}</p>
+                </div>
+                <div className='flex justify-between'>
                     <p className='text-gray-500'>Status Pinjam:</p>
-                    <Badge className='capitalize'>{borrowingData?.status}</Badge>
+                    <Badge className='capitalize'>{borrowingStatusMapper(borrowingData?.status)}</Badge>
                 </div>
                 <div className='flex justify-between'>
                     <p className='text-gray-500'>Tgl Pinjam:</p>
@@ -144,26 +156,37 @@ export default function BorrowingDetailPage() {
                 <Button rounded className='mt-2' onClick={() => setIsQRModalOpen(!isQRModalOpen)}>Tampilkan QR Peminjaman</Button>
 
                 <h1 className='font-semibold text-xl my-5'>Barang</h1>
-                <div className='m-0 p-4 border border-gray-200 rounded-xl shadow-md'>
-                    <div className='flex gap-4'>
-                        <img src={borrowingData?.item.image_url} className='size-16 rounded-lg object-cover' />
-                        <div>
-                            <p className='font-bold'>{borrowingData?.item.name}</p>
-                            <p className='text-sm text-gray-500'>{borrowingData?.selected_variant.name}</p>
-                            <p className='text-sm'>Jumlah: {borrowingData?.quantity}</p>
+                <button onClick={() => navigate({
+                    to: '/item',
+                    state: (prev) => ({ ...prev, id: borrowingData?.item.id })
+                })}>
+                    <div className="bg-white shadow-md rounded-xl p-4 text-start">
+                        <div className="flex gap-x-4 h-full w-full items-center">
+                            <img className="size-16 rounded-xl object-cover" src={borrowingData?.item.image_url} alt="" />
+                            <div>
+                                <p className="text-lg font-semibold">{useSubstring(borrowingData?.item.name)}</p>
+                                <p className="text-gray-500 text-sm">Varian: {borrowingData?.selected_variant.name}</p>
+                                <p className="text-gray-500 text-sm">Total Jumlah Pinjam: {borrowingData?.quantity}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </button>
+
+
 
                 {transactionData && (
                     <>
                         <h1 className='font-semibold text-xl my-5'>Pembayaran</h1>
                         {transactionData.map((t) => (
-                            <div key={t.id} className="p-4 border rounded-xl mb-4 bg-gray-50 dark:bg-zinc-900">
+                            <div key={t.id} className="bg-white shadow-md rounded-xl p-4 text-start">
+                                <div className='flex justify-between mb-4'>
+                                    <p className="text-gray-500 text-sm">ID Pembayaran:</p>
+                                    <p className="font-bold">{t.id}</p>
+                                </div>
                                 <div className='flex justify-between mb-4'>
                                     <p className="text-gray-500 text-sm">Status Bayar</p>
                                     <Badge colors={{ bg: t.status === 'paid' ? 'bg-green-500' : 'bg-red-500' }}>
-                                        {t.status}
+                                        {transactionStatusMapper(t.status)}
                                     </Badge>
                                 </div>
                                 <div className='flex justify-between mb-4'>
@@ -173,6 +196,13 @@ export default function BorrowingDetailPage() {
                                 <div className='flex justify-between mb-4'>
                                     <p className="text-gray-500 text-sm">Total</p>
                                     <p className="font-bold">Rp {Number(t.amount).toLocaleString('id-ID')}</p>
+                                </div>
+                                <div className='flex justify-between mb-4'>
+                                    <p className="text-gray-500 text-sm">Dibayarkan Pada:</p>
+                                    <p className="font-bold">{t.paid_at ?
+                                        new Date(t.paid_at!).toLocaleString("id-ID") :
+                                        '-'
+                                    }</p>
                                 </div>
                                 {t.status === 'unpaid' && (
                                     <Button
@@ -189,19 +219,23 @@ export default function BorrowingDetailPage() {
                 )}
 
                 {isReturned && (
-                    <div className="p-4 border-2  rounded-xl mt-5">
-                        <div className="flex items-center gap-2 mb-3">
-                            <h2 className='font-bold'>Status Pengembalian</h2>
+                    <>
+                        <div className="bg-white shadow-md rounded-xl p-4 text-start">
+                            <div className='flex justify-between mb-4'>
+                                <p className="text-gray-500 text-sm">Kondisi Barang:</p>
+                                <p className="font-bold">{borrowingData?.returnings?.returned_condition}</p>
+                            </div>
+                            <div className='flex justify-between mb-4'>
+                                <p className="text-gray-500 text-sm">Verifikasi Admin:</p>
+                                <Badge className="capitalize">{returningStatusMapper(borrowingData?.returnings?.status || '-')}</Badge>
+                            </div>
+                            <div className='flex justify-between mb-4'>
+                                <p className="text-gray-500 text-sm">Tanggal Pengembalian:</p>
+                                <p className="font-bold">{new Date(borrowingData?.returnings?.returned_date!).toLocaleString("id-ID")}</p>
+                            </div>
                         </div>
-                        <div className='flex justify-between text-sm mb-1'>
-                            <p>Kondisi Barang:</p>
-                            <p className='font-semibold'>{borrowingData?.returnings?.returned_condition}</p>
-                        </div>
-                        <div className='flex justify-between text-sm'>
-                            <p>Verifikasi Admin:</p>
-                            <Badge className="capitalize">{borrowingData?.returnings?.status}</Badge>
-                        </div>
-                    </div>
+                    </>
+
                 )}
                 {hasPaid && !isReturned && borrowingData?.status !== 'pending' && (
                     <Button

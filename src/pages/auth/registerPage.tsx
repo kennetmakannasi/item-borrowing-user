@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Page, Block, Button } from 'konsta/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -5,6 +6,7 @@ import * as z from 'zod';
 import { registerApi } from '../../api/auth';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useToast } from '../../context/toastContext';
+import { Icon } from '@iconify/react';
 
 export const registerSchema = z.object({
     email: z.string().min(1, 'Email wajib diisi').email('Format email tidak valid'),
@@ -18,6 +20,7 @@ type RegisterFormInputs = z.infer<typeof registerSchema>;
 export default function RegisterPage() {
     const { showToast } = useToast();
     const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
 
     const {
         register,
@@ -98,19 +101,32 @@ export default function RegisterPage() {
 
                 {/* Input Password */}
                 <div className="space-y-1 px-4">
-                    <input
-                        {...register('password')}
-                        type="password"
-                        placeholder="Kata Sandi"
-                        className={`w-full px-5 py-3 rounded-full border-2 transition-all outline-none 
+                    <div className="relative">
+                        <input
+                            {...register('password')}
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder="Kata Sandi"
+                            className={`w-full px-5 py-3 pr-14 rounded-full border-2 transition-all outline-none 
               ${errors.password ? 'border-red-500 focus:border-red-600' : 'border-gray-200 focus:border-primary'}`}
-                    />
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword((current) => !current)}
+                            aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                            className="absolute inset-y-0 right-4 flex items-center text-gray-500"
+                        >
+                            <Icon
+                                icon={showPassword ? 'material-symbols:visibility-off-outline' : 'material-symbols:visibility-outline'}
+                                className="text-xl"
+                            />
+                        </button>
+                    </div>
                     {errors.password && (
                         <p className="text-xs text-red-500 ml-4 font-medium">{errors.password.message}</p>
                     )}
                 </div>
 
-                <Block className="p-0 !m-0 pt-4 space-y-3 text-center">
+                <Block className="p-0 mt-4 space-y-3 text-center">
                     <Button
                         rounded
                         large

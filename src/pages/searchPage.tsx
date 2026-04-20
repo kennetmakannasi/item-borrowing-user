@@ -53,6 +53,12 @@ export default function SearchPage() {
                 }}
             >
                 <div className='px-4 w-full flex justify-between gap-x-3'>
+                    <button onClick={() => navigate({
+                        to: '/qr-scan',
+                        replace: true
+                    })} className='w-10 flex items-center justify-center text-gray-500'>
+                        <Icon height={30} icon={'boxicons:qr'} />
+                    </button>
                     <input
                         type='text'
                         value={searchQuery}

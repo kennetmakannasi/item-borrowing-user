@@ -2,7 +2,6 @@ import { createFileRoute } from '@tanstack/react-router'
 import ActivationPage from '../../pages/auth/invitePage'
 import { z } from 'zod'
 
-// Definisikan schema untuk query parameter
 const inviteSearchSchema = z.object({
   jwt: z.string().catch(''), // Jika tidak ada, default ke string kosong
 })

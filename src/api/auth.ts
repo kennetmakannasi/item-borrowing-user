@@ -74,3 +74,19 @@ export const getProfileApi = async (): Promise<ProfileResponse> => {
     const response = await api.get<GeneralResponse<UserProfile>>('/api/profile/me');
     return response.data;
 };
+
+export const logoutApi = async (): Promise<GeneralResponse<void>> => {
+    try {
+        const response = await api.post<GeneralResponse<void>>(`auth/logout` ,{});
+
+        return response.data;
+
+    } catch (error: any) {
+        console.error(error)
+        return useError({
+            code: error.response?.status ?? 500,
+            message: error.response?.data?.message ?? error.message ?? "Login Failed",
+            data: error?.response?.data?.data ?? null
+        })
+    }
+};
