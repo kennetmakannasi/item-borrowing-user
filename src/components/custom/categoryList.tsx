@@ -20,26 +20,21 @@ export default function CategoryList({ onClick, selectedCategoryId }: CategoryLi
 
     return (
         <div className="relative">
-            <div className="flex gap-x-2 overflow-x-auto py-4 px-4 no-scrollbar scroll-smooth snap-x">
-                <button onClick={() => onClick(null)}>
-                    <Badge
-                        className="py-2 px-4 cursor-pointer snap-start flex-shrink-0"
-                        colors={selectedCategoryId ? inActive : active}
-                    >
-                        Semua
-                    </Badge>
+            <div className="flex gap-x-10 overflow-x-auto py-4 px-4 no-scrollbar scroll-smooth snap-x">
+                <button className={`text-gray-500 ${selectedCategoryId ? '' : 'text-primary font-semibold'}`} onClick={() => onClick(null)}>
+                    Semua
+                    {selectedCategoryId === null &&
+                        <div className="w-full bg-primary h-1 rounded-full"></div>
+                    }
                 </button>
 
 
                 {data?.data?.map((item) => (
-                    <button onClick={() => onClick(item.id)}>
-                        <Badge
-                            key={item.id}
-                            className="py-2 px-4 cursor-pointer snap-start flex-shrink-0 border border-gray-200"
-                            colors={selectedCategoryId === item.id ? active : inActive}
-                        >
-                            {item.name}
-                        </Badge>
+                    <button className={`text-gray-500 ${selectedCategoryId === item.id ? 'text-primary font-semibold ' : ''}`} onClick={() => onClick(item.id)}>
+                        {item.name.length > 10 ? item.name.slice(0, 7) + '...' : item.name}
+                        {selectedCategoryId === item.id &&
+                            <div className="w-full bg-primary h-1 rounded-full"></div>
+                        }
                     </button>
 
                 ))}

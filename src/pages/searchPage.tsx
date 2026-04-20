@@ -46,7 +46,7 @@ export default function SearchPage() {
     };
 
     return (
-        <Page>
+        <>
             <Navbar
                 colors={{
                     bgMaterial: 'bg-white shadow-md'
@@ -112,6 +112,6 @@ export default function SearchPage() {
                     <p className="text-center">Mulai masukan kata pencarian</p>
                 </Block>
             )}
-        </Page>
+        </>
     );
 }

@@ -38,6 +38,15 @@ export default function ProfilePage() {
             </Card>
 
             <Card className='bg-white shadow-md'>
+                <Link to='/change-password'>
+                    <button className='w-full flex gap-x-2 items-center'>
+                        <Icon height={25} icon={"mdi-light:lock"} />
+                        <p>Ubah Password</p>
+                    </button>
+                </Link>
+            </Card>
+
+            <Card className='bg-white shadow-md'>
                 <button onClick={handleLogout} className='w-full flex gap-x-2 items-center text-red-600'>
                     <Icon height={25} icon={"material-symbols:logout-rounded"} />
                     <p className='font-semibold'>Keluar</p>

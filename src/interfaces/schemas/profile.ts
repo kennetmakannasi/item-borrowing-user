@@ -17,4 +17,11 @@ export const updateProfileSchema = z.object({
     .nullable(),
 });
 
+export const changePasswordSchema = z.object({
+    current_password: z.string().min(8, "Panjang password minimal 8 huruf!"),
+    new_password: z.string().min(8, "Panjang password minimal 8 huruf!"),
+    confirm_new_password: z.string().min(8, "Panjang password minimal 8 huruf!")
+})
+
 export type UpdateProfileType = z.infer<typeof updateProfileSchema>;
+export type ChangePasswordRequestType = z.infer<typeof changePasswordSchema>;

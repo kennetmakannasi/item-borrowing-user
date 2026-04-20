@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UpdateProfileRouteImport } from './routes/update-profile'
 import { Route as QrScanRouteImport } from './routes/qr-scan'
 import { Route as ItemRouteImport } from './routes/item'
+import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as BorrowingDetailsRouteImport } from './routes/borrowing-details'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as MainRouteImport } from './routes/_main'
@@ -40,6 +41,11 @@ const QrScanRoute = QrScanRouteImport.update({
 const ItemRoute = ItemRouteImport.update({
   id: '/item',
   path: '/item',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChangePasswordRoute = ChangePasswordRouteImport.update({
+  id: '/change-password',
+  path: '/change-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BorrowingDetailsRoute = BorrowingDetailsRouteImport.update({
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/': typeof MainIndexRoute
   '/auth': typeof AuthRouteWithChildren
   '/borrowing-details': typeof BorrowingDetailsRoute
+  '/change-password': typeof ChangePasswordRoute
   '/item': typeof ItemRoute
   '/qr-scan': typeof QrScanRoute
   '/update-profile': typeof UpdateProfileRoute
@@ -133,6 +140,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/borrowing-details': typeof BorrowingDetailsRoute
+  '/change-password': typeof ChangePasswordRoute
   '/item': typeof ItemRoute
   '/qr-scan': typeof QrScanRoute
   '/update-profile': typeof UpdateProfileRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/_main': typeof MainRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/borrowing-details': typeof BorrowingDetailsRoute
+  '/change-password': typeof ChangePasswordRoute
   '/item': typeof ItemRoute
   '/qr-scan': typeof QrScanRoute
   '/update-profile': typeof UpdateProfileRoute
@@ -174,6 +183,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/borrowing-details'
+    | '/change-password'
     | '/item'
     | '/qr-scan'
     | '/update-profile'
@@ -191,6 +201,7 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/borrowing-details'
+    | '/change-password'
     | '/item'
     | '/qr-scan'
     | '/update-profile'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/_main'
     | '/auth'
     | '/borrowing-details'
+    | '/change-password'
     | '/item'
     | '/qr-scan'
     | '/update-profile'
@@ -230,6 +242,7 @@ export interface RootRouteChildren {
   MainRoute: typeof MainRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   BorrowingDetailsRoute: typeof BorrowingDetailsRoute
+  ChangePasswordRoute: typeof ChangePasswordRoute
   ItemRoute: typeof ItemRoute
   QrScanRoute: typeof QrScanRoute
   UpdateProfileRoute: typeof UpdateProfileRoute
@@ -256,6 +269,13 @@ declare module '@tanstack/react-router' {
       path: '/item'
       fullPath: '/item'
       preLoaderRoute: typeof ItemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/change-password': {
+      id: '/change-password'
+      path: '/change-password'
+      fullPath: '/change-password'
+      preLoaderRoute: typeof ChangePasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/borrowing-details': {
@@ -401,6 +421,7 @@ const rootRouteChildren: RootRouteChildren = {
   MainRoute: MainRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   BorrowingDetailsRoute: BorrowingDetailsRoute,
+  ChangePasswordRoute: ChangePasswordRoute,
   ItemRoute: ItemRoute,
   QrScanRoute: QrScanRoute,
   UpdateProfileRoute: UpdateProfileRoute,

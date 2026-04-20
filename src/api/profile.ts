@@ -1,7 +1,8 @@
 import { api } from "../utils/api";
-import type { UpdateProfileType } from "../interfaces/schemas/profile";
+import type { ChangePasswordRequestType, UpdateProfileType } from "../interfaces/schemas/profile";
 import type { GeneralResponse } from "../interfaces/generalResponse";
 import type { UserProfile } from "../interfaces/auth";
+import useError from "../utils/useError";
 
 export const updateProfileApi = async (data: UpdateProfileType): Promise<GeneralResponse<UserProfile>> => {
   const formData = new FormData();
@@ -20,4 +21,20 @@ export const updateProfileApi = async (data: UpdateProfileType): Promise<General
   });
 
   return response.data;
+};
+
+export const requestChangePasswordApi = async (data: ChangePasswordRequestType): Promise<GeneralResponse<void>> => {
+    try {
+        const response = await api.patch<GeneralResponse<void>>('/api/profile/change-password', data);
+
+        return response.data;
+
+    } catch (error: any) {
+        console.error(error)
+        return useError({
+            code: error.response?.status ?? 500,
+            message: error.response?.data?.message ?? error.message ?? "Login Failed",
+            data: error?.response?.data?.data ?? null
+        })
+    }
 };

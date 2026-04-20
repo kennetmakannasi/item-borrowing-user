@@ -56,10 +56,13 @@ export default function SearchResultPage() {
 
 
     return (
-        <Page>
+        <>
             <Navbar
                 title="Hasil Pencarian"
                 left={<NavbarBackLink onClick={() => history.go(-1)} />}
+                colors={{ 
+                    bgMaterial: 'bg-white'
+                 }}
             />
             {isLoading && (
                 <Block className="text-center">Memuat barang...</Block>
@@ -85,6 +88,6 @@ export default function SearchResultPage() {
             {!isLoading && pageInfo?.has_next_page &&
                 <div className='mb-20' ref={ref}>load</div>
             }
-        </Page>
+        </>
     );
 }
