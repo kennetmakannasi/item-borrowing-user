@@ -31,9 +31,9 @@ export async function searchItemApi(keyword: string, page: number): Promise<Item
     return response.data;
 };
 
-export async function getFavoriteItemsApi(page: number): Promise<ItemListResponse> {
+export async function getFavoriteItemsApi(page: number, q: string): Promise<ItemListResponse> {
     const pageNumber = page ? page : 1;
-    const response = await api.get<ItemListResponse>(`/api/favorites?page=${pageNumber}`);
+    const response = await api.get<ItemListResponse>(`/api/favorites?page=${pageNumber}&q=${q}`);
     return response.data;
 };
 

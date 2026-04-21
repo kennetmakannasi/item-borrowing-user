@@ -128,11 +128,14 @@ export default function BorrowingDetailPage() {
     const qrData = JSON.stringify(qrDataRaw)
 
     return (
-        <Page>
+        <>
             <Navbar
                 className="top-0 sticky"
                 left={<NavbarBackLink onClick={() => history.go(-1)} />}
                 title="Detail Peminjaman"
+                colors={{
+                    bgMaterial: 'bg-white'
+                }}
             />
 
             <Block className='grid grid-cols-1 gap-2 pb-20'>
@@ -338,6 +341,6 @@ export default function BorrowingDetailPage() {
                     }}
                 />
             </Sheet>
-        </Page>
+        </>
     );
 }

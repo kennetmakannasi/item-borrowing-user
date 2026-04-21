@@ -19,9 +19,9 @@ export const requestBorrowingApi = async (data: BorrowRequestType): Promise<Crea
     }
 };
 
-export async function getBorrowingHistoryApi(page: number): Promise<BorrowHistoryResponse> {
+export async function getBorrowingHistoryApi(page: number, q: string, status:string): Promise<BorrowHistoryResponse> {
     const pageNumber = page ? page : 1;
-    const response = await api.get<BorrowHistoryResponse>(`/api/borrow/me?page=${pageNumber}`);
+    const response = await api.get<BorrowHistoryResponse>(`/api/borrow/me?page=${pageNumber}&q=${q}&status=${status}`);
     return response.data;
 };  
 

@@ -21,7 +21,14 @@ export default function BorrowingHistoryCard({ item }: { item: BorrowHistoryItem
     return (
         <button onClick={navigateToDetail}>
             <div className="bg-white shadow-md rounded-xl p-4 text-start">
-
+                <div className="flex w-full justify-between items-center mb-2">
+                    <p className="text-gray-500 text-sm">Tanggal Peminjaman:</p>
+                    <p className="text-gray-500 text-sm">
+                        {new Date(item.borrow_date).toLocaleString("id-ID", {
+                            dateStyle: "medium"
+                        })}
+                    </p>
+                </div>
                 <div className="flex gap-x-4 h-full w-full items-center">
                     <img className="size-16 rounded-xl object-cover" src={item.item.image_url} alt="" />
                     <div>

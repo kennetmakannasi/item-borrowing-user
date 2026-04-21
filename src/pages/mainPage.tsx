@@ -123,7 +123,7 @@ export default function MainPage() {
             //     </div>
             // )} */}
 
-            <div className='px-3'>
+            <div className='px-3 mt-4'>
                 {/* Popular Items Carousel */}
                 <div className='relative overflow-hidden rounded-3xl h-40'>
                     <AnimatePresence mode='wait'>
