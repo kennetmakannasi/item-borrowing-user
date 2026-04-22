@@ -79,7 +79,7 @@ export default function SearchPage() {
                     suggestions.data.map((item: any) => (
                         <button
                             onClick={() => handleSearchSubmit(item.name)}
-                            className="flex px-2 py-3 space-x-2 items-center"
+                            className="flex px-2 py-3 space-x-2 items-center text-gray-500"
                             key={item.id}
                         >
                             <Icon height={20} icon={"material-symbols:search-rounded"} />
@@ -95,11 +95,13 @@ export default function SearchPage() {
                     ))
                 ) : (
                     debouncedQuery.length > 2 && !isLoading && (
-                        <ListItem
-                            title={`Cari "${searchQuery}"`}
-                            link
+                        <button
                             onClick={() => handleSearchSubmit(searchQuery)}
-                        />
+                            className="flex px-2 py-3 space-x-2 items-center text-gray-500"
+                        >
+                            <Icon height={20} icon={"material-symbols:search-rounded"} />
+                            <p>Cari "{searchQuery}"</p>
+                        </button>
                     )
                 )}
             </div>

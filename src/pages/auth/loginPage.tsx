@@ -11,7 +11,7 @@ import { Icon } from '@iconify/react';
 
 const loginSchema = z.object({
     email: z.string().min(1, 'Email wajib diisi').email('Format email tidak valid'),
-    password: z.string().min(6, 'Kata sandi minimal 6 karakter'),
+    password: z.string().min(8, 'Kata sandi minimal 8 karakter'),
 });
 
 type LoginFormInputs = z.infer<typeof loginSchema>;
@@ -61,9 +61,10 @@ export default function LoginPage() {
     }
 
     return (
-        <Page>
+        <>
             <Block className="text-center mt-10">
-                <h1 className="text-3xl font-bold text-primary">Masuk</h1>
+                <h1 className="text-2xl font-semibold">Selamat datang di appname</h1>
+                <h1 className="text-2xl font-semibold">Masuk Sekarang</h1>
             </Block>
 
             <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">
@@ -114,7 +115,7 @@ export default function LoginPage() {
                         large
                         type="submit"
                         disabled={isSubmitting}
-                        className={isSubmitting ? 'opacity-50' : ''}
+                        className={`bg-primary ${isSubmitting ? 'opacity-50' : ''}`}
                     >
                         {isSubmitting ? 'Memproses...' : 'Masuk'}
                     </Button>
@@ -123,6 +124,7 @@ export default function LoginPage() {
                     </Link>
                 </Block>
             </form>
-        </Page>
+        </>
+
     );
 }

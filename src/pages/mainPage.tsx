@@ -16,7 +16,7 @@ import { useInView } from "react-intersection-observer";
 import type { Item } from '../interfaces/item';
 import type { Pagination } from '../interfaces/generalResponse';
 import PopularCard from '../components/custom/popularCard';
-import ItemCardSkeleton from '../components/custom/itemCardSkeleton';
+import ItemCardSkeleton from '../components/custom/skeletons/itemCardSkeleton';
 
 export default function MainPage() {
     const navigate = useNavigate();
@@ -112,21 +112,11 @@ export default function MainPage() {
                     </button>
                 </div>
             </Navbar>
-            {/* <p>Populer</p>
-            // {popularData.isError ? (
-            //     <Block className="text-center text-red-500">Gagal mengambil data.</Block>
-            // ) : (
-            //     <div className='grid grid-cols-1 gap-5 px-5'>
-            //         {popularData.data?.data?.map((item, index) => (
-            //             <PopularCard key={index} item={item} />
-            //         ))}
-            //     </div>
-            // )} */}
 
             <div className='px-3 mt-4'>
-                {/* Popular Items Carousel */}
+
                 <div className='relative overflow-hidden rounded-3xl h-40'>
-                    <AnimatePresence mode='wait'>
+                    <AnimatePresence mode='wait' initial={false}>
                         {popularData.data?.data?.[carouselIndex] && (
                             <motion.div
                                 key={carouselIndex}
@@ -138,22 +128,28 @@ export default function MainPage() {
                             >
                                 <img
                                     className='w-full h-full object-cover rounded-3xl'
-                                    src={popularData.data.data[carouselIndex].image_url}
+                                    src={popularData?.data?.data[carouselIndex]?.image_url || 'placeholders/item.png'}
                                     alt={popularData.data.data[carouselIndex].name}
                                 />
                                 <div className='bg-black/40 inset-0 absolute rounded-3xl flex items-end p-5'>
                                     <div>
-                                        <h1 className='text-white text-2xl font-bold'>{popularData.data.data[carouselIndex].name}</h1>
+                                        <h1 className='text-white text-2xl font-bold'>
+                                            {popularData.data.data[carouselIndex].name}
+                                        </h1>
                                         <p className='text-white text-sm w-40'>
-                                            {popularData.data.data[carouselIndex].description.length > 30 ? popularData.data.data[carouselIndex].description.substring(0, 30) + '...' : popularData.data.data[carouselIndex].description}
+                                            {popularData.data.data[carouselIndex].description.length > 30
+                                                ? popularData.data.data[carouselIndex].description.substring(0, 30) + '...'
+                                                : popularData.data.data[carouselIndex].description}
                                         </p>
-                                        <button onClick={() => navigate({
-                                            to: '/item',
-                                            state: (prev) => ({
-                                                ...prev,
-                                                id: popularData.data.data[carouselIndex].id
-                                            })
-                                        })} className='mt-3 px-4 py-2 bg-primary text-white rounded-full text-sm'>Pinjam Sekarang</button>
+                                        <button
+                                            onClick={() => navigate({
+                                                to: '/item',
+                                                state: (prev) => ({ ...prev, id: popularData.data.data[carouselIndex].id })
+                                            })}
+                                            className='mt-3 px-4 py-2 bg-primary text-white rounded-full text-sm'
+                                        >
+                                            Pinjam Sekarang
+                                        </button>
                                     </div>
                                 </div>
                             </motion.div>
@@ -167,9 +163,8 @@ export default function MainPage() {
                         <button
                             key={item.id}
                             onClick={() => setCarouselIndex(index)}
-                            className={`h-2 rounded-full transition-all ${
-                                index === carouselIndex ? 'bg-primary w-8' : 'bg-gray-300 w-2'
-                            } hover:bg-primary`}
+                            className={`h-2 rounded-full transition-all ${index === carouselIndex ? 'bg-primary w-8' : 'bg-gray-300 w-2'
+                                } hover:bg-primary`}
                         />
                     ))}
                 </div>

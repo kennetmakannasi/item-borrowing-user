@@ -1,11 +1,4 @@
 import React, { useState, useRef } from 'react';
-import {
-    Page,
-    Navbar,
-    NavbarBackLink,
-    Block,
-    Button,
-} from 'konsta/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../context/authContext';
@@ -16,6 +9,15 @@ import { updateProfileSchema, type UpdateProfileType } from '../interfaces/schem
 import { updateProfileApi } from '../api/profile';
 import { Icon } from '@iconify/react';
 
+import {
+    Page,
+    Navbar,
+    NavbarBackLink,
+    Block,
+    Button,
+    Sheet, // Tambahkan ini
+} from 'konsta/react';
+
 export default function UpdateProfilePage() {
     const { user } = useAuth();
     const { showToast } = useToast();
@@ -24,6 +26,9 @@ export default function UpdateProfilePage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [previewUrl, setPreviewUrl] = useState<string | null>(user?.avatar || null);
+    
+    // State untuk Sheet konfirmasi
+    const [isConfirmSheetOpen, setIsConfirmSheetOpen] = useState(false);
 
     const {
         register,
@@ -46,8 +51,10 @@ export default function UpdateProfilePage() {
         }
     };
 
-    const onSubmit = async (data: UpdateProfileType) => {
+    // Fungsi submit yang akan dipanggil setelah konfirmasi di Sheet
+    const onActualSubmit = async (data: UpdateProfileType) => {
         try {
+            setIsConfirmSheetOpen(false); // Tutup sheet dulu
             const res = await updateProfileApi(data);
             if (res.success) {
                 showToast('Profil berhasil diperbarui', 'success');
@@ -67,12 +74,11 @@ export default function UpdateProfilePage() {
                 title="Edit Profil"
                 centerTitle={true}
                 left={<NavbarBackLink onClick={() => history.go(-1)} />}
-                colors={{
-                    bgMaterial: 'bg-white'
-                }}
+                colors={{ bgMaterial: 'bg-white' }}
             />
 
-            <form onSubmit={handleSubmit(onSubmit)} className='space-y-5'>
+            {/* Form tetap menggunakan styling lama, hanya ganti onSubmit-nya */}
+            <form onSubmit={handleSubmit(() => setIsConfirmSheetOpen(true))} className='space-y-5'>
                 <Block className="flex flex-col items-center mt-8">
                     <div
                         className="size-40 rounded-full overflow-hidden mb-4 relative cursor-pointer group"
@@ -106,7 +112,7 @@ export default function UpdateProfilePage() {
                         type="text"
                         placeholder="Nama"
                         className={`w-full px-5 py-3 rounded-full border-2 transition-all outline-none 
-              ${errors.display_name ? 'border-red-500 focus:border-red-600' : 'border-gray-200 focus:border-primary'}`}
+                        ${errors.display_name ? 'border-red-500 focus:border-red-600' : 'border-gray-200 focus:border-primary'}`}
                     />
                     {errors.display_name && (
                         <p className="text-xs text-red-500 ml-4 font-medium">{errors.display_name.message}</p>
@@ -120,25 +126,59 @@ export default function UpdateProfilePage() {
                         type="text"
                         placeholder="Nama Pengguna"
                         className={`w-full px-5 py-3 rounded-full border-2 transition-all outline-none 
-              ${errors.user_name ? 'border-red-500 focus:border-red-600' : 'border-gray-200 focus:border-primary'}`}
+                        ${errors.user_name ? 'border-red-500 focus:border-red-600' : 'border-gray-200 focus:border-primary'}`}
                     />
                     {errors.user_name && (
                         <p className="text-xs text-red-500 ml-4 font-medium">{errors.user_name.message}</p>
                     )}
                 </div>
 
-
                 <Block className="mt-8">
                     <Button
                         large
                         rounded
                         type="submit"
+                        className='bg-primary'
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
                     </Button>
                 </Block>
             </form>
+
+            {/* Sheet Konfirmasi */}
+            <Sheet
+                opened={isConfirmSheetOpen}
+                onBackdropClick={() => setIsConfirmSheetOpen(false)}
+            >
+                <Block className="space-y-4">
+                    <div className="text-center py-2">
+                        <h2 className="text-xl font-bold mb-2">Simpan Perubahan?</h2>
+                        <p className="text-gray-500">Pastikan data yang Anda masukkan sudah benar sebelum disimpan.</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                        <Button
+                            large
+                            clear
+                            rounded
+                            outline
+                            className="border-primary text-primary"
+                            onClick={() => setIsConfirmSheetOpen(false)}
+                        >
+                            Batal
+                        </Button>
+                        <Button
+                            large
+                            rounded
+                            className="bg-primary"
+                            
+                            onClick={handleSubmit(onActualSubmit)}
+                        >
+                            Ya, Simpan
+                        </Button>
+                    </div>
+                </Block>
+            </Sheet>
         </>
     );
 }

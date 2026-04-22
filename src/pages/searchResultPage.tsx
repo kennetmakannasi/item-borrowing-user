@@ -7,6 +7,7 @@ import { useInView } from "react-intersection-observer";
 import ItemCard from "../components/custom/itemCard";
 import type { Item } from "../interfaces/item";
 import type { Pagination } from "../interfaces/generalResponse";
+import { Icon } from "@iconify/react";
 
 export default function SearchResultPage() {
     const location = useLocation();
@@ -23,10 +24,10 @@ export default function SearchResultPage() {
     });
 
     useEffect(() => {
-        if (!keyword) {
+        if (keyword === undefined || keyword === null) {
             navigate({ to: '/', replace: true });
         }
-    }, [keyword, navigate]);
+    }, []); 
 
     const { data: queryData, isLoading, isError } = useQuery({
         queryKey: ['items', 'search', keyword, currentPage],
@@ -58,12 +59,24 @@ export default function SearchResultPage() {
     return (
         <>
             <Navbar
-                title="Hasil Pencarian"
-                left={<NavbarBackLink onClick={() => history.go(-1)} />}
-                colors={{ 
+                bgClassName='border-t border-2 border-gray-200 dark:border-gray-700'
+                colors={{
                     bgMaterial: 'bg-white'
-                 }}
-            />
+                }}
+            >
+
+                <div className='px-4 w-full flex justify-between gap-x-3'>
+                    <div className='w-5 flex items-center justify-center text-gray-500'>
+                        <NavbarBackLink onClick={() => history.go(-1)} />                            </div>
+                    <button onClick={() => navigate({
+                        to: '/search',
+                        replace: true
+                    })} className='w-full px-5 py-3 text-start rounded-full border-2 border-gray-200 transition-all outline-none '
+                    >
+                        <p className='text-gray-400'>Cari</p>
+                    </button>
+                </div>
+            </Navbar>
             {isLoading && (
                 <Block className="text-center">Memuat barang...</Block>
             )}

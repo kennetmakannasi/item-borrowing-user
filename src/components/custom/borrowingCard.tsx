@@ -4,6 +4,8 @@ import useSubstring from "../../utils/textFormatter";
 import { useNavigate } from "@tanstack/react-router";
 import useFormatRupiah from "../../utils/rupiahFormatter";
 import { borrowingStatusMapper } from "../../utils/statusMappers";
+import useFormatDate from "../../utils/dateFormatter";
+import StatusBadge from "./statusBadge";
 
 export default function BorrowingHistoryCard({ item }: { item: BorrowHistoryItem }) {
     const navigate = useNavigate();
@@ -24,13 +26,11 @@ export default function BorrowingHistoryCard({ item }: { item: BorrowHistoryItem
                 <div className="flex w-full justify-between items-center mb-2">
                     <p className="text-gray-500 text-sm">Tanggal Peminjaman:</p>
                     <p className="text-gray-500 text-sm">
-                        {new Date(item.borrow_date).toLocaleString("id-ID", {
-                            dateStyle: "medium"
-                        })}
+                       {useFormatDate(item?.borrow_date || '-')}
                     </p>
                 </div>
                 <div className="flex gap-x-4 h-full w-full items-center">
-                    <img className="size-16 rounded-xl object-cover" src={item.item.image_url} alt="" />
+                    <img className="size-16 rounded-xl object-cover" src={item?.item?.image_url || 'placeholders/item.png'} alt="" />
                     <div>
                         <p className="text-lg font-semibold">{useSubstring(item.item.name)}</p>
                         <p className="text-gray-500 text-sm">Varian: {item.selected_variant.name}</p>
@@ -39,7 +39,9 @@ export default function BorrowingHistoryCard({ item }: { item: BorrowHistoryItem
                 </div>
                 <div className="flex w-full justify-between items-center mt-2">
                     <p className="text-gray-500 text-sm">Status:</p>
-                    <Badge className="text-sm">{borrowingStatusMapper(item.status)}</Badge>
+                    <StatusBadge
+                        status={item.status}
+                    />
                 </div>
                 <div className="flex w-full justify-between items-center mt-2">
                     <p className="text-gray-500 text-sm">Total Harga:</p>

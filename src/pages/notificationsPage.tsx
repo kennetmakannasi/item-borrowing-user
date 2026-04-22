@@ -4,9 +4,10 @@ import { getNotificationsApi, readNotificationApi, ReadAllNotificationApi } from
 import { useEffect, useState } from "react";
 import { useRouter } from "@tanstack/react-router"; // Pastikan import router
 import { useInView } from 'react-intersection-observer';
-import NotificationCardSkeleton from '../components/custom/notificationCardSkeleton';
+import NotificationCardSkeleton from '../components/custom/skeletons/notificationCardSkeleton';
 import type { NotificationItem } from '../interfaces/notifications';
 import type { Pagination } from '../interfaces/generalResponse';
+import useFormatDate from "../utils/dateFormatter";
 
 export default function NotificationsPage() {
     const { history } = useRouter();
@@ -112,10 +113,7 @@ export default function NotificationsPage() {
                                     </p>
                                 </div>
                                 <p className="text-xs text-gray-400">
-                                    {new Date(item.createdAt).toLocaleString('id-ID', {
-                                        dateStyle: 'medium',
-                                        timeStyle: 'short'
-                                    })}
+                                   {useFormatDate(item.createdAt)}
                                 </p>
                             </div>
                         </div>

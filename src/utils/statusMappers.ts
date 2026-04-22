@@ -1,11 +1,24 @@
 export function returningStatusMapper(status: string): string {
     switch (status?.toLowerCase()) {
         case 'pending':
-            return 'pending';
+            return 'Pending';
         case 'rejected':
-            return 'ditolak';
+            return 'Ditolak';
         case 'approved':
-            return 'diterima';
+            return 'Diterima';
+        default:
+            return status;
+    }
+}
+
+export function returningConditonStatusMapper(status: string): string {
+    switch (status?.toLowerCase()) {
+        case 'good':
+            return 'Baik';
+        case 'bad':
+            return 'Rusak';
+        case 'lost':
+            return 'Hilang';
         default:
             return status;
     }

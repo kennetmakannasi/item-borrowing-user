@@ -8,10 +8,11 @@ import { getFavoriteItemsApi } from '../api/item';
 import { useEffect, useState, type KeyboardEvent } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { Icon } from '@iconify/react';
-import ItemCardSkeleton from '../components/custom/itemCardSkeleton';
+import ItemCardSkeleton from '../components/custom/skeletons/itemCardSkeleton';
 import type { ItemListResponse, Item } from '../interfaces/item';
 import type { Pagination } from '../interfaces/generalResponse';
 import ItemCardRow from '../components/custom/itemCardRow';
+import { useNavigate } from '@tanstack/react-router';
 
 export default function FavoritePage() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -20,10 +21,11 @@ export default function FavoritePage() {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [searchQuery, setSearchQuery] = useState("");
     const { ref, inView } = useInView({ threshold: 0 });
+    const navigate = useNavigate();
 
     // Tambahkan searchQuery ke queryKey agar otomatis trigger saat refetch atau queryFn dipanggil
     const { data, isLoading, isError, refetch } = useQuery<ItemListResponse>({
-        queryKey: ['favorites', currentPage], 
+        queryKey: ['favorites', currentPage],
         queryFn: () => getFavoriteItemsApi(currentPage, searchQuery),
     });
 
@@ -72,9 +74,6 @@ export default function FavoritePage() {
                 colors={{ bgMaterial: 'bg-white shadow-md' }}
             >
                 <div className='px-4 w-full flex justify-between gap-x-3'>
-                    <div className='w-10 flex items-center justify-center text-gray-500'>
-                         <Icon height={24} icon={'material-symbols:favorite-outline'} />
-                    </div>
                     <div className='w-full relative flex items-center'>
                         <input
                             type='text'
@@ -90,6 +89,12 @@ export default function FavoritePage() {
                             </button>
                         )}
                     </div>
+                    <button onClick={() => navigate({
+                        to: '/notifications',
+                        replace: true
+                    })} className='w-10 flex items-center justify-center text-gray-500'>
+                        <Icon height={30} icon={'ion:notifications-outline'} />
+                    </button>
                 </div>
             </Navbar>
 
@@ -98,8 +103,8 @@ export default function FavoritePage() {
                     <button
                         onClick={() => setViewMode('grid')}
                         className={`p-2 rounded-lg transition-colors ${viewMode === 'grid'
-                                ? 'bg-primary text-white'
-                                : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                            ? 'bg-primary text-white'
+                            : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                             }`}
                     >
                         <Icon height={20} icon='material-symbols:grid-3x3' />
@@ -107,8 +112,8 @@ export default function FavoritePage() {
                     <button
                         onClick={() => setViewMode('list')}
                         className={`p-2 rounded-lg transition-colors ${viewMode === 'list'
-                                ? 'bg-primary text-white'
-                                : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                            ? 'bg-primary text-white'
+                            : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                             }`}
                     >
                         <Icon height={20} icon='material-symbols:list' />
@@ -117,8 +122,8 @@ export default function FavoritePage() {
             </div>
 
             <div className={`${viewMode === 'grid'
-                    ? 'grid grid-cols-2 gap-5 px-5'
-                    : 'grid grid-cols-1 gap-3 px-5'
+                ? 'grid grid-cols-2 gap-5 px-5'
+                : 'grid grid-cols-1 gap-3 px-5'
                 }`}>
                 {favorites.length === 0 && isLoading ? (
                     Array.from({ length: 6 }).map((_, index) => (
@@ -151,7 +156,7 @@ export default function FavoritePage() {
             {isError && favorites.length === 0 && (
                 <div className='text-center text-red-500 mt-10'>Gagal mengambil favorit.</div>
             )}
-            
+
             <div className='h-20' />
         </>
     )

@@ -10,8 +10,8 @@ import { Icon } from '@iconify/react';
 
 export const registerSchema = z.object({
     email: z.string().min(1, 'Email wajib diisi').email('Format email tidak valid'),
-    user_name: z.string().min(3, 'Username minimal 3 karakter').max(20, 'Username maksimal 20 karakter').regex(/^[a-zA-Z0-9_]+$/, 'Username hanya boleh berisi huruf, angka, dan underscore'),
-    display_name: z.string().min(1, 'Nama tampilan wajib diisi').max(50, 'Nama tampilan terlalu panjang'),
+    user_name: z.string().min(3, 'Nama Pengguna minimal 3 karakter').max(20, 'Nama Pengguna maksimal 20 karakter').regex(/^[a-zA-Z0-9_]+$/, 'Username hanya boleh berisi huruf, angka, dan underscore'),
+    display_name: z.string().min(1, 'Nama wajib diisi').max(50, 'Nama terlalu panjang'),
     password: z.string().min(8, 'Kata sandi minimal 8 karakter'),
 });
 
@@ -34,7 +34,7 @@ export default function RegisterPage() {
         try {
             console.log('Data register:', data);
             const res = await registerApi(data);
-            
+
             if (res?.success) {
                 showToast(res?.message);
                 localStorage.setItem("unverified-user-id", res.data.id.toString());
@@ -53,13 +53,12 @@ export default function RegisterPage() {
     }
 
     return (
-        <Page>
+        <>
             <Block className="text-center mt-10">
-                <h1 className="text-3xl font-bold text-primary">Daftar</h1>
+                <h1 className="text-2xl font-semibold">Buat Akun</h1>
             </Block>
 
             <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">
-                {/* Input Email */}
                 <div className="space-y-1 px-4">
                     <input
                         {...register('email')}
@@ -132,7 +131,7 @@ export default function RegisterPage() {
                         large
                         type="submit"
                         disabled={isSubmitting}
-                        className={isSubmitting ? 'opacity-50' : ''}
+                        className={`bg-primary  ${isSubmitting ? 'opacity-50' : ''}`}
                     >
                         {isSubmitting ? 'Memproses...' : 'Daftar'}
                     </Button>
@@ -141,6 +140,6 @@ export default function RegisterPage() {
                     </Link>
                 </Block>
             </form>
-        </Page>
+        </>
     );
 }

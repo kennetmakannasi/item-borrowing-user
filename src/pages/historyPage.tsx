@@ -5,6 +5,7 @@ import {
     Block,
     Badge,
     Navbar,
+    Button,
 } from 'konsta/react';
 import { useEffect, useState } from 'react';
 import { useQuery } from "@tanstack/react-query";
@@ -13,9 +14,10 @@ import { getBorrowingHistoryApi } from '../api/borrowing';
 import BorrowingHistoryCard from '../components/custom/borrowingCard';
 import type { BorrowHistoryItem, BorrowHistoryResponse } from '../interfaces/borrowing';
 import type { Pagination } from '../interfaces/generalResponse';
-import BorrowingHistoryCardSkeleton from '../components/custom/borrowingHistoryCardSkeleton';
+import BorrowingHistoryCardSkeleton from '../components/custom/skeletons/borrowingHistoryCardSkeleton';
 import { borrowingStatusMapper } from '../utils/statusMappers';
 import { Icon } from '@iconify/react';
+import useFormatDate from '../utils/dateFormatter';
 
 export default function HistoryPage() {
     const [currentPage, setCurrentPage] = useState(1);
@@ -89,14 +91,6 @@ export default function HistoryPage() {
                 }}
             >
                 <div className='px-4 w-full flex justify-between gap-x-3'>
-                    <button
-                        // onClick={() => navigate({
-                        //     to: '/qr-scan',
-                        //     replace: true
-                        // })} 
-                        className='w-10 flex items-center justify-center text-gray-500'>
-                        <Icon height={30} icon={'boxicons:qr'} />
-                    </button>
                     <div className='w-full relative flex items-center'>
                         <input
                             type='text'
@@ -118,7 +112,12 @@ export default function HistoryPage() {
                             </button>
                         )}
                     </div>
-
+                    <button onClick={() => navigate({
+                        to: '/notifications',
+                        replace: true
+                    })} className='w-10 flex items-center justify-center text-gray-500'>
+                        <Icon height={30} icon={'ion:notifications-outline'} />
+                    </button>
                 </div>
             </Navbar>
             <button onClick={() => setIsStatusModalOpen(true)} className='border border-gray-500 text-gray-500 rounded-full px-3 py-1 bg-white m-4'>
@@ -148,7 +147,7 @@ export default function HistoryPage() {
                 </div>
             )}
             <div className='h-20' />
-            <Sheet
+            <Sheet className='bg-white'
                 opened={isModalOpen}
                 onBackdropClick={handleCloseModal}
             >
@@ -168,7 +167,7 @@ export default function HistoryPage() {
                     </div>
                     <div className='flex justify-between'>
                         <p>Tanggal Peminjaman:</p>
-                        <p>{selectedData?.borrow_date ? new Date(selectedData.borrow_date).toLocaleString("id-ID") : '-'}</p>
+                        <p>{selectedData?.borrow_date ? useFormatDate(selectedData.borrow_date) : '-'}</p>
                     </div>
                     <div className='flex justify-between'>
                         <p>Status Peminjaman:</p>
@@ -190,20 +189,40 @@ export default function HistoryPage() {
                     </div>
                 </Block>
             </Sheet>
-            <Sheet
+            <Sheet className='bg-white'
                 opened={isStatusModalOpen}
                 onBackdropClick={() => setIsStatusModalOpen(false)}
             >
-                <Block className='grid grid-cols-1 gap-2'>
-                    <h1 className='text-2xl font-semibold'>Pilih Status</h1>
-                    {status.map((item) => (
-                        <button className='text-start' onClick={() => {
-                            setSelectedStatus(item.value);
-                            setIsStatusModalOpen(false)
-                        }}>{item.label}</button>
-                    ))}
-                </Block>
+                <Block className="ios:mt-6 pb-10">
+                    <div className="flex justify-between items-center mb-4">
+                        <h1 className="text-xl font-bold">Pilih Status</h1>
+                        <Button clear small onClick={() => setIsStatusModalOpen(false)} className="w-auto">
+                            Tutup
+                        </Button>
+                    </div>
 
+                    <div className="grid grid-cols-1 gap-3">
+                        {status.map((item) => {
+                            const isActive = selectedStatus === item.value;
+                            return (
+                                <button
+                                    key={item.value}
+                                    onClick={() => {
+                                        setSelectedStatus(item.value);
+                                        setIsStatusModalOpen(false);
+                                    }}
+                                    className={`text-start px-4 py-3 rounded-xl border-2 transition-all flex items-center gap-3 ${isActive
+                                        ? 'border-primary bg-primary/5 text-primary'
+                                        : 'border-gray-100 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 text-gray-500'
+                                        }`}
+                                >
+                                    <div className={`size-3 rounded-full ${isActive ? 'bg-primary' : 'bg-gray-300'}`} />
+                                    <span className="font-medium">{item.label}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+                </Block>
             </Sheet>
         </>
     )

@@ -43,10 +43,10 @@ export default function VerifyEmailPage() {
     };
 
     return (
-        <Page>
+        <>
             <Block className="text-center">
                 <Block className="text-center mt-10">
-                    <h1 className="text-3xl font-bold text-primary">Verifikasi Email</h1>
+                    <h1 className="text-2xl font-semibold">Verifikasi Email</h1>
                     <p>kami telah mengirim kode verifikasi email ke <span>{localStorage.getItem('unverified-email')}</span></p>
                 </Block>
                 <OtpInput onChange={(val) => setOtpValue(val)} />
@@ -54,12 +54,12 @@ export default function VerifyEmailPage() {
                 <Button
                     large
                     rounded
-                    className="mt-10"
+                    className="mt-10 bg-primary"
                     onClick={handleVerify}
                 >
                     Konfirmasi
                 </Button>
             </Block>
-        </Page>
+        </>
     );
 }

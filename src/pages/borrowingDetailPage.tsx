@@ -20,7 +20,12 @@ import { QRCodeSVG } from 'qrcode.react';
 import { useAuth } from '../context/authContext';
 import useSubstring from '../utils/textFormatter';
 import { useNavigate } from '@tanstack/react-router';
-import { borrowingStatusMapper, returningStatusMapper, transactionStatusMapper } from '../utils/statusMappers';
+import { borrowingStatusMapper, returningConditonStatusMapper, returningStatusMapper, transactionStatusMapper } from '../utils/statusMappers';
+import useFormatDate from '../utils/dateFormatter';
+import Divider from '../components/custom/divider';
+import { transactionTypeMapper } from '../utils/transactionTypeMapper';
+import BorrowingDetailSkeleton from '../components/custom/skeletons/borrowingDetailSkeleton';
+import StatusBadge from '../components/custom/statusBadge';
 
 export default function BorrowingDetailPage() {
     const navigate = useNavigate();
@@ -118,7 +123,7 @@ export default function BorrowingDetailPage() {
     const hasPaid = transactionData?.some(t => t.status === 'paid');
     const isReturned = !!borrowingData?.returnings;
 
-    if (isLoading) return <Page><Block className="text-center">Memuat...</Block></Page>;
+    if (isLoading) return <BorrowingDetailSkeleton/>;
 
     const qrDataRaw = borrowingData ? {
         borrowing_id: borrowingData.id,
@@ -138,38 +143,44 @@ export default function BorrowingDetailPage() {
                 }}
             />
 
-            <Block className='grid grid-cols-1 gap-2 pb-20'>
-                <h1 className='font-semibold text-xl mb-5'>Detil Peminjaman</h1>
+            <Block className='grid grid-cols-1 gap-4 pb-10'>
                 <div className='flex justify-between'>
-                    <p className='text-gray-500'>ID Peminjaman:</p>
+                    <p className='text-gray-500'>ID Peminjaman</p>
                     <p className='font-medium'>{borrowingData?.id}</p>
                 </div>
                 <div className='flex justify-between'>
-                    <p className='text-gray-500'>Tipe Pembayaran:</p>
-                    <p className='font-medium'>{borrowingData?.payment_type}</p>
+                    <p className='text-gray-500'>Tipe Pembayaran</p>
+                    <p className='font-medium'>{transactionTypeMapper(borrowingData?.payment_type)}</p>
                 </div>
                 <div className='flex justify-between'>
-                    <p className='text-gray-500'>Status Pinjam:</p>
-                    <Badge className='capitalize'>{borrowingStatusMapper(borrowingData?.status)}</Badge>
+                    <p className='text-gray-500'>Status Pinjam</p>
+                    <StatusBadge
+                        status={borrowingData?.status}
+                    />
                 </div>
                 <div className='flex justify-between'>
-                    <p className='text-gray-500'>Tgl Pinjam:</p>
-                    <p>{new Date(borrowingData?.borrow_date!).toLocaleString("id-ID")}</p>
+                    <p className='text-gray-500'>Tgl Pinjam</p>
+                    <p>{useFormatDate(borrowingData?.borrow_date || '-')}</p>
                 </div>
-                <Button rounded className='mt-2' onClick={() => setIsQRModalOpen(!isQRModalOpen)}>Tampilkan QR Peminjaman</Button>
+                <div className='flex justify-between'>
+                    <p className='text-gray-500'>Batas Kembali</p>
+                    <p>{useFormatDate(borrowingData?.return_date || '-')}</p>
+                </div>
+                <Button rounded className='mt-2 bg-primary' onClick={() => setIsQRModalOpen(!isQRModalOpen)}>Tampilkan QR Peminjaman</Button>
 
-                <h1 className='font-semibold text-xl my-5'>Barang</h1>
+                <Divider />
+                <h1 className='font-semibold text-xl'>Barang</h1>
                 <button onClick={() => navigate({
                     to: '/item',
                     state: (prev) => ({ ...prev, id: borrowingData?.item.id })
                 })}>
-                    <div className="bg-white shadow-md rounded-xl p-4 text-start">
+                    <div className="bg-white shadow-md rounded-xl p-4 text-start border-gray-200 border-2">
                         <div className="flex gap-x-4 h-full w-full items-center">
-                            <img className="size-16 rounded-xl object-cover" src={borrowingData?.item.image_url} alt="" />
+                            <img className="size-16 rounded-xl object-cover" src={borrowingData?.item.image_url || 'placeholders/item.png'} alt="" />
                             <div>
                                 <p className="text-lg font-semibold">{useSubstring(borrowingData?.item.name)}</p>
-                                <p className="text-gray-500 text-sm">Varian: {borrowingData?.selected_variant.name}</p>
-                                <p className="text-gray-500 text-sm">Total Jumlah Pinjam: {borrowingData?.quantity}</p>
+                                <p className="text-gray-500 text-sm">Varian {borrowingData?.selected_variant.name}</p>
+                                <p className="text-gray-500 text-sm">Total Jumlah Pinjam {borrowingData?.quantity}</p>
                             </div>
                         </div>
                     </div>
@@ -179,32 +190,32 @@ export default function BorrowingDetailPage() {
 
                 {transactionData && (
                     <>
-                        <h1 className='font-semibold text-xl my-5'>Pembayaran</h1>
+                        <Divider />
+                        <h1 className='font-semibold text-xl mb-5'>Pembayaran</h1>
                         {transactionData.map((t) => (
-                            <div key={t.id} className="bg-white shadow-md rounded-xl p-4 text-start">
+                            <div key={t.id} className="bg-white shadow-md rounded-xl p-4 text-start border-gray-200 border-2">
                                 <div className='flex justify-between mb-4'>
-                                    <p className="text-gray-500 text-sm">ID Pembayaran:</p>
+                                    <p className="text-gray-500 text-sm">ID Pembayaran</p>
                                     <p className="font-bold">{t.id}</p>
                                 </div>
                                 <div className='flex justify-between mb-4'>
                                     <p className="text-gray-500 text-sm">Status Bayar</p>
-                                    <Badge colors={{ bg: t.status === 'paid' ? 'bg-green-500' : 'bg-red-500' }}>
-                                        {transactionStatusMapper(t.status)}
-                                    </Badge>
+                                    <StatusBadge
+                                        status={t.status}
+                                    />
                                 </div>
                                 <div className='flex justify-between mb-4'>
-                                    <p className="text-gray-500 text-sm">Tipe Pembayaran:</p>
-                                    <p className="font-bold">{t.type}</p>
+                                    <p className="text-gray-500 text-sm">Tipe Pembayaran</p>
+                                    <p className="font-bold">{transactionTypeMapper(t.type)}</p>
                                 </div>
                                 <div className='flex justify-between mb-4'>
                                     <p className="text-gray-500 text-sm">Total</p>
                                     <p className="font-bold">Rp {Number(t.amount).toLocaleString('id-ID')}</p>
                                 </div>
                                 <div className='flex justify-between mb-4'>
-                                    <p className="text-gray-500 text-sm">Dibayarkan Pada:</p>
-                                    <p className="font-bold">{t.paid_at ?
-                                        new Date(t.paid_at!).toLocaleString("id-ID") :
-                                        '-'
+                                    <p className="text-gray-500 text-sm">Dibayarkan Pada</p>
+                                    <p className="font-bold">{
+                                        useFormatDate(t?.paid_at || '-')
                                     }</p>
                                 </div>
                                 {t.status === 'unpaid' && (
@@ -212,6 +223,7 @@ export default function BorrowingDetailPage() {
                                         rounded
                                         onClick={() => paymentMutation.mutate(t.id)}
                                         disabled={paymentMutation.isPending}
+                                        className='bg-primary'
                                     >
                                         {paymentMutation.isPending ? 'Menghubungkan...' : 'Bayar Sekarang'}
                                     </Button>
@@ -223,18 +235,22 @@ export default function BorrowingDetailPage() {
 
                 {isReturned && (
                     <>
-                        <div className="bg-white shadow-md rounded-xl p-4 text-start">
+                        <Divider />
+                        <h1 className='font-semibold text-xl mb-5'>Pengembalian</h1>
+                        <div className="bg-white shadow-md rounded-xl p-4 text-start border-gray-200 border-2">
                             <div className='flex justify-between mb-4'>
-                                <p className="text-gray-500 text-sm">Kondisi Barang:</p>
-                                <p className="font-bold">{borrowingData?.returnings?.returned_condition}</p>
+                                <p className="text-gray-500 text-sm">Kondisi Barang</p>
+                                <p className="font-bold">{returningConditonStatusMapper(borrowingData?.returnings?.returned_condition || '-')}</p>
                             </div>
                             <div className='flex justify-between mb-4'>
-                                <p className="text-gray-500 text-sm">Verifikasi Admin:</p>
-                                <Badge className="capitalize">{returningStatusMapper(borrowingData?.returnings?.status || '-')}</Badge>
+                                <p className="text-gray-500 text-sm">Verifikasi Admin</p>
+                                <StatusBadge
+                                    status={borrowingData?.returnings?.status || '-'}
+                                />
                             </div>
                             <div className='flex justify-between mb-4'>
-                                <p className="text-gray-500 text-sm">Tanggal Pengembalian:</p>
-                                <p className="font-bold">{new Date(borrowingData?.returnings?.returned_date!).toLocaleString("id-ID")}</p>
+                                <p className="text-gray-500 text-sm">Tanggal Pengembalian</p>
+                                <p className="font-bold">{useFormatDate(borrowingData?.returnings?.returned_date || '-')}</p>
                             </div>
                         </div>
                     </>
@@ -244,102 +260,131 @@ export default function BorrowingDetailPage() {
                     <Button
                         large rounded
                         onClick={() => setIsModalOpen(true)}
-                        className="w-full h-12 mt-5"
+                        className="w-full mt-5 bg-primary"
                     >
                         Ajukan Pengembalian
                     </Button>
                 )}
             </Block>
-
-            <Sheet
-                opened={isModalOpen}
-                onBackdropClick={() => setIsModalOpen(false)}
-            >
-                <div className="p-4 pb-10 bg-white dark:bg-zinc-950 rounded-t-2xl">
-                    <h1 className='font-bold text-xl mb-4'>Kondisi Barang</h1>
-                    <div className='grid grid-cols-2 gap-2 mb-4'>
-                        {conditonOption.map((item, index) => (
-                            <Card
-                                key={index}
-                                className={`m-0 cursor-pointer transition-all border-2 ${returnedCondition === item.name
-                                    ? 'border-primary bg-primary/5'
-                                    : 'border-transparent'
-                                    }`}
-                                onClick={() => setReturnedCondition(item.name)}
-                            >
-                                <p className="font-semibold">{item.label}</p>
-                            </Card>
-                        ))}
+            <Sheet className='bg-white' opened={isModalOpen} onBackdropClick={() => setIsModalOpen(false)}>
+                <Block>
+                    <div className="flex justify-between items-center mb-6">
+                        <h1 className='font-bold text-2xl'>Konfirmasi Pengembalian</h1>
                     </div>
-                    <Block>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Upload Bukti Foto
-                        </label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            className="block w-full text-sm text-gray-500
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded-full file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:bg-primary file:text-white
-                                    hover:file:bg-opacity-80 cursor-pointer"
-                        />
-                        <p className="text-xs text-gray-400 mt-2">Format: JPG, PNG, WEBP (Maks 5MB)</p>
 
-                        {previewUrl && (
-                            <div className="mt-4 relative inline-block">
-                                <img
-                                    src={previewUrl}
-                                    alt="Preview"
-                                    className="w-full max-h-48 object-cover rounded-xl border-2 border-primary/20 shadow-sm"
-                                />
-                                <button
-                                    onClick={() => {
-                                        setEvidenceFile(null);
-                                        setPreviewUrl(null);
-                                    }}
-                                    className="absolute -top-2 -right-2 bg-black/50 text-white rounded-full p-1 shadow-lg"
+                    {/* Seksi Kondisi Barang */}
+                    <section className="mb-6">
+                        <p className='text-sm text-gray-500 tracking-wider mb-3'>Kondisi Barang</p>
+                        <div className='grid grid-cols-2 gap-3'>
+                            {conditonOption.map((item, index) => (
+                                <div
+                                    key={index}
+                                    className={`p-3 rounded-xl border-2 transition-all shadow-md cursor-pointer ${returnedCondition === item.name
+                                        ? 'border-primary bg-primary/5'
+                                        : 'border-gray-100 dark:border-zinc-800'
+                                        }`}
+                                    onClick={() => setReturnedCondition(item.name)}
                                 >
-                                    <Icon icon="material-symbols:close-rounded" />
-                                </button>
-                            </div>
-                        )}
-                    </Block>
+                                    <p className="font-bold text-sm">{item.label}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
 
-                    <Block className="mt-8">
+                    {/* Seksi Upload Foto */}
+                    <section className="mb-6">
+                        <p className='text-sm text-gray-500 tracking-wider mb-3'>Bukti Foto</p>
+                        <div className="space-y-3">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="block w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-full file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-primary file:text-white
+                        hover:file:bg-opacity-80 cursor-pointer"
+                            />
+                            <p className="text-xs text-gray-400">Format: JPG, PNG, WEBP (Maks 5MB)</p>
+
+                            {previewUrl && (
+                                <div className="mt-4 relative inline-block w-full">
+                                    <img
+                                        src={previewUrl}
+                                        alt="Preview"
+                                        className="w-full max-h-48 object-cover rounded-xl border-2 border-primary/20 shadow-sm"
+                                    />
+                                    <button
+                                        onClick={() => {
+                                            setEvidenceFile(null);
+                                            setPreviewUrl(null);
+                                        }}
+                                        className="absolute -top-2 -right-2 bg-black/70 text-white rounded-full p-1 shadow-lg"
+                                    >
+                                        <Icon icon="material-symbols:close-rounded" />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </section>
+
+                    <div className='w-full h-0.5 bg-gray-100 dark:bg-zinc-800 mt-8 mb-6'></div>
+
+                    {/* Action Buttons */}
+                    <div className="grid grid-cols-2 gap-3">
+                        <Button
+                            large
+                            clear
+                            outline
+                            rounded
+                            className="flex-1 text-primary border-primary"
+                            onClick={() => setIsModalOpen(false)}
+                        >
+                            Batal
+                        </Button>
                         <Button
                             large
                             rounded
+                            className="bg-primary"
                             onClick={handleConfirmReturn}
                             disabled={returnMutation.isPending}
                         >
-                            {returnMutation.isPending ? 'Mengirim Data...' : 'Konfirmasi Pengembalian'}
+                            {returnMutation.isPending ? 'Memproses...' : 'Konfirmasi Kembali'}
                         </Button>
-                    </Block>
-                </div>
+                    </div>
+                </Block>
             </Sheet>
-            <Sheet
-                opened={isQRModalOpen}
-                onBackdropClick={() => setIsQRModalOpen(false)}
-            >
-                <p className='text-center pt-4 font-semibold text-xl'>Kode QR Peminjaman</p>
-                <p className='text-center mt-2'>QR ini dapat dipakai untuk staff menyetujui peminjaman atau pengembalian</p>
-                <QRCodeSVG className='mx-auto'
-                    value={qrData}
-                    level="H"
-                    includeMargin={true}
-                    style={{ width: '100%', height: 'auto' }}
-                    imageSettings={{
-                        src: '',
-                        x: undefined,
-                        y: undefined,
-                        height: 0,
-                        width: 0,
-                        excavate: true,
-                    }}
-                />
+            <Sheet className='bg-white' opened={isQRModalOpen} onBackdropClick={() => setIsQRModalOpen(false)}>
+                <Block>
+                    <div className="flex flex-col items-center">
+                        <h1 className="font-bold text-2xl mb-2">Kode QR Peminjaman</h1>
+                        <p className="text-center text-gray-500 text-sm leading-relaxed mb-6 px-4">
+                            QR ini dapat dipakai oleh staff untuk menyetujui permintaan peminjaman atau pengembalian barang Anda.
+                        </p>
+
+                        <div className="bg-white p-4 rounded-2xl shadow-lg border border-gray-100 dark:border-zinc-800 mb-8">
+                            <QRCodeSVG
+                                className="mx-auto"
+                                value={qrData}
+                                level="H"
+                                includeMargin={false} 
+                                style={{ width: '200px', height: '200px' }} 
+                            />
+                        </div>
+
+                        <Divider/>
+
+                        <Button
+                            large
+                            rounded
+                            className="w-full bg-primary"
+                            onClick={() => setIsQRModalOpen(false)}
+                        >
+                            Tutup
+                        </Button>
+                    </div>
+                </Block>
             </Sheet>
         </>
     );

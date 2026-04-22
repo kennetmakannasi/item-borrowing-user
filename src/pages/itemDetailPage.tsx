@@ -22,6 +22,7 @@ import { requestBorrowingApi } from '../api/borrowing';
 import type { BorrowRequestType } from '../interfaces/schemas/borrowing';
 import type { PaymentType } from '../interfaces/borrowing';
 import useFormatRupiah from '../utils/rupiahFormatter';
+import ItemDetailSkeleton from '../components/custom/skeletons/itemDetailSkeleton';
 
 export default function ItemDetailPage() {
     const navigate = useNavigate();
@@ -139,7 +140,12 @@ export default function ItemDetailPage() {
         mutation.mutate(payload);
     };
 
-    if (isLoading) return <Page><Block className="text-center">Memuat detail barang...</Block></Page>;
+    const handlePresetDays = (days: number) => {
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + days);
+        setDueDate(targetDate.toISOString().split('T')[0]);
+    };
+    if (isLoading) return <ItemDetailSkeleton />;
 
     if (isError || !item) return <Page><Block className="text-center text-red-500">Gagal mengambil data atau barang tidak ditemukan.</Block></Page>;
 
@@ -152,6 +158,16 @@ export default function ItemDetailPage() {
                         <NavbarBackLink onClick={() => history.go(-1)} />
                     </div>
                 }
+                right={
+                    <button onClick={
+                        () => navigate({
+                            to: '/search',
+                            replace: true
+                        })
+                    } className='bg-white size-10 flex justify-center items-center rounded-full '>
+                        <Icon height={24} icon={'material-symbols:search-rounded'} />
+                    </button>
+                }
                 colors={{
                     bgMaterial: 'bg-transparent'
                 }}
@@ -160,15 +176,30 @@ export default function ItemDetailPage() {
             {/* Carousel Gambar */}
             <div className="overflow-hidden bg-white dark:bg-black" ref={emblaRef}>
                 <div className="flex">
-                    {item.images.map((img) => (
-                        <div key={img.id} className="flex-[0_0_100%] min-w-0 relative h-[400px]">
+                    {/* Cek jika item.images kosong, tampilkan placeholder */}
+                    {item.images.length === 0 ? (
+                        <div className="flex-[0_0_100%] min-w-0 h-[400px]">
                             <img
-                                src={img.url}
-                                alt={item.name}
+                                src="placeholders/item.png"
                                 className="w-full h-full object-cover"
+                                alt="placeholder"
                             />
                         </div>
-                    ))}
+                    ) : (
+                        item.images.map((img) => (
+                            <div key={img.id} className="flex-[0_0_100%] min-w-0 relative h-[400px]">
+                                <img
+                                    src={img.url}
+                                    alt={item.name}
+                                    className="w-full h-full object-cover"
+                                    // Handle jika link gambar mati (broken link)
+                                    onError={(e) => {
+                                        (e.target as HTMLImageElement).src = 'placeholders/item.png';
+                                    }}
+                                />
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
 
@@ -179,6 +210,9 @@ export default function ItemDetailPage() {
                         <img
                             src={img.url}
                             className="size-16 rounded-lg object-cover border-2 border-transparent focus:border-primary"
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'placeholders/item.png';
+                            }}
                         />
                     </button>
                 ))}
@@ -223,91 +257,137 @@ export default function ItemDetailPage() {
             </div>
 
             <div className='w-full bg-white/60 dark:bg-black/60 backdrop-blur-md bottom-0 left-0 fixed rounded-t-xl p-5'>
-                <Button onClick={() => setIsModalOpen(true)} className='rounded-full h-12'>Pinjam Sekarang</Button>
+                <Button onClick={() => setIsModalOpen(true)} className='rounded-full bg-primary h-12'>Pinjam Sekarang</Button>
             </div>
 
-            <Sheet
-
-                opened={isModalOpen}
-                onBackdropClick={() => setIsModalOpen(false)}
-            >
-                <Block className="ios:mt-4">
-                    <h1 className='font-bold text-xl mb-4'>Pilih Varian</h1>
-                    <div className='grid grid-cols-2 gap-2 mb-4'>
-                        {item.variants.map((v) => (
-                            <Card
-                                key={v.id}
-                                className={`m-0 cursor-pointer transition-all border-2 ${selectedVariantId === v.id
-                                    ? 'border-primary bg-primary/5'
-                                    : 'border-transparent'
-                                    }`}
-                                onClick={() => setSelectedVariantId(v.id)}
-                            >
-                                <p className="font-semibold">{v.name}</p>
-                                <p className="text-xs text-gray-500">Stok: {v.availableStock}</p>
-                            </Card>
-                        ))}
+            <Sheet className='bg-white' opened={isModalOpen} onBackdropClick={() => setIsModalOpen(false)}>
+                <Block >
+                    <div className="flex justify-between items-center mb-6">
+                        <h1 className='font-bold text-2xl'>Detail Peminjaman</h1>
                     </div>
 
-                    <div className='w-full flex justify-between items-center px-2 mb-6'>
-                        <div>
-                            <p className='text-md font-medium'>Jumlah Pinjam</p>
-                            <p className='text-xs text-gray-400'>Maksimal: {item.variants.find(v => v.id === selectedVariantId)?.availableStock || 0}</p>
+                    {/* Seksi Varian */}
+                    <section className="mb-6">
+                        <p className='text-sm text-gray-500 tracking-wider mb-3'>Pilih Varian</p>
+                        <div className='grid grid-cols-2 gap-3'>
+                            {item.variants.map((v) => (
+                                <div
+                                    key={v.id}
+                                    className={`p-3 rounded-xl border-2 transition-all shadow-md cursor-pointer ${selectedVariantId === v.id
+                                        ? 'border-primary bg-primary/5'
+                                        : 'border-gray-100 dark:border-zinc-800'
+                                        }`}
+                                    onClick={() => setSelectedVariantId(v.id)}
+                                >
+                                    <p className="font-bold text-sm">{v.name}</p>
+                                    <p className="text-sm text-gray-500 tracking-tight">Tersedia: {v.availableStock}</p>
+                                </div>
+                            ))}
                         </div>
-                        <Stepper
-                            value={value}
-                            onPlus={increase}
-                            onMinus={decrease}
-                        />
+                    </section>
+
+                    {/* Seksi Jumlah & Durasi */}
+                    <div className="grid grid-cols-1 gap-4">
+                        <div className='flex justify-between w-full'>
+                            <p className='text-sm text-gray-500 mb-3'>Jumlah</p>
+                            <Stepper
+                                value={value}
+                                small
+                                rounded
+                                onPlus={increase}
+                                onMinus={decrease}
+                                colors={{
+                                    fillBgMaterial: 'bg-primary',
+                                    textMaterial: 'text-gray-500'
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <p className='text-sm text-gray-500 tracking-wider mb-3'>Pembayaran</p>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setSelectedPaymentType('full_payment')}
+                                    className={`flex-1 py-2 px-1 rounded-lg text-xs font-medium border transition-all ${selectedPaymentType === 'full_payment'
+                                        ? 'bg-primary text-white border-primary'
+                                        : 'bg-transparent border-gray-200 dark:border-zinc-700 text-gray-600'
+                                        }`}
+                                >
+                                    Full
+                                </button>
+                                <button
+                                    onClick={() => setSelectedPaymentType('deposit_payment')}
+                                    className={`flex-1 py-2 px-1 rounded-lg text-xs font-medium border transition-all ${selectedPaymentType === 'deposit_payment'
+                                        ? 'bg-primary text-white border-primary'
+                                        : 'bg-transparent border-gray-200 dark:border-zinc-700 text-gray-600'
+                                        }`}
+                                >
+                                    DP
+                                </button>
+                            </div>
+                        </div>
+                        <section>
+                            <p className='text-sm text-gray-500 mb-3'>Durasi Pengembalian</p>
+
+                            {/* Preset Buttons */}
+                            <div className="flex gap-2 mb-3">
+                                {[3, 5, 7].map((days) => (
+                                    <button
+                                        key={days}
+                                        onClick={() => handlePresetDays(days)}
+                                        className={`flex-1 py-2 px-1 rounded-lg text-xs font-medium border transition-all ${rentalDays === days + 1
+                                            ? 'bg-primary text-white border-primary'
+                                            : 'bg-transparent border-gray-200 dark:border-zinc-700 text-gray-600'
+                                            }`}
+                                    >
+                                        {days} Hari
+                                    </button>
+                                ))}
+                            </div>
+
+                            <input
+                                type="date"
+                                value={dueDate}
+                                min={new Date().toISOString().split('T')[0]}
+                                onChange={(e) => setDueDate(e.target.value)}
+                                className="w-full rounded-xl border border-gray-200 px-4 py-3 bg-gray-50 dark:bg-zinc-800 dark:border-zinc-700 focus:border-primary outline-none transition-all"
+                            />
+                        </section>
                     </div>
 
-                    <h1 className='font-bold text-xl mb-4'>Pilih Pembayaran</h1>
-                    <div className='grid grid-cols-2 gap-2 mb-4'>
+                    {/* Seksi Tanggal & Preset */}
 
-                        <Card
-                            className={`m-0 cursor-pointer transition-all border-2 ${selectedPaymentType === "full_payment"
-                                ? 'border-primary bg-primary/5'
-                                : 'border-transparent'
-                                }`}
-                            onClick={() => setSelectedPaymentType("full_payment")}
+
+                    {/* Ringkasan Biaya */}
+                    <div className='w-full h-0.5 bg-gray-200 my-4'></div>
+                    <div className="bg-gray-50 dark:bg-zinc-900 rounded-2xl p-4">
+                        <div className="flex justify-between items-center mb-1 text-gray-500 text-sm">
+                            <span>Total Durasi</span>
+                            <span className="font-medium text-foreground">{rentalDays} Hari</span>
+                        </div>
+                        <div className="flex justify-between items-center text-lg font-bold">
+                            <span>Total Bayar</span>
+                            <span>{useFormatRupiah(totalPayment)}</span>
+                        </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="grid grid-cols-2 gap-3">
+                        <Button
+                            large
+                            outline
+                            className="flex-1 text-primary rounded-full border-primary"
+                            onClick={() => setIsModalOpen(false)}
                         >
-                            <p className="font-semibold">Full</p>
-                        </Card>
-                        <Card
-                            className={`m-0 cursor-pointer transition-all border-2 ${selectedPaymentType === "deposit_payment"
-                                ? 'border-primary bg-primary/5'
-                                : 'border-transparent'
-                                }`}
-                            onClick={() => setSelectedPaymentType("deposit_payment")}
-                        >
-                            <p className="font-semibold">DP</p>
-                        </Card>
-                    </div>
-
-                    <div className='mb-4'>
-                        <h1 className='font-bold text-xl mb-2'>Tanggal Pengembalian</h1>
-                        <input
-                            type="date"
-                            value={dueDate}
-                            min={new Date().toISOString().split('T')[0]}
-                            onChange={(e) => setDueDate(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white dark:bg-zinc-800 dark:border-zinc-700"
-                        />
-                    </div>
-                    <p>Total Bayar</p>
-                    <p className='text-xs text-gray-500'>Durasi: {rentalDays} hari</p>
-                    <p className='my-2'>Rp. {totalPayment.toLocaleString('id-ID')}</p>
-
-                    <div className="flex gap-x-3">
-                        <Button outline rounded onClick={() => setIsModalOpen(false)}>
                             Batal
                         </Button>
                         <Button
+                            large
                             rounded
+                            className="bg-primary"
                             onClick={handleConfirmBorrow}
                             disabled={mutation.isPending}
                         >
-                            {mutation.isPending ? "Memproses..." : "Konfirmasi"}
+                            {mutation.isPending ? "Memproses..." : "Konfirmasi Pinjam"}
                         </Button>
                     </div>
                 </Block>

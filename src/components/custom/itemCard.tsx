@@ -19,7 +19,7 @@ export default function ItemCard({ item }: { item: Item }) {
     return (
         <button onClick={navigateToDetail}>
             <div className="bg-white shadow-md rounded-xl p-3 text-start">
-                <img className="w-full h-40 rounded-xl object-cover" src={item.image_url} alt="" />
+                <img className="w-full h-40 rounded-xl object-cover" src={item?.image_url || 'placeholders/item.png'} alt="" />
                 <p className="text-lg">{useSubstring(item.name)}</p>
                 <p className="text-lg font-semibold">{useFormatRupiah(Number(item.borrow_price))}</p>
                 <p className="text-sm text-gray-500">Stok: {item.total_stock}</p>

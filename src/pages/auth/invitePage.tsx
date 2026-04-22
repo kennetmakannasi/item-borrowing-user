@@ -99,9 +99,9 @@ export default function ActivationPage() {
     if (isLoadingData) return <Page><Block>Memuat data...</Block></Page>;
 
     return (
-        <Page>
+        <>
             <Block className="text-center mt-10">
-                <h1 className="text-3xl font-bold text-primary">Aktivasi Akun</h1>
+                <h1 className="text-2xl font-semibold">Aktivasi Akun</h1>
                 <p className="text-gray-500 mt-2">Lengkapi kata sandi untuk mengaktifkan akun Anda</p>
             </Block>
 
@@ -157,12 +157,12 @@ export default function ActivationPage() {
                         large
                         type="submit"
                         disabled={isSubmitting}
-                        className={isSubmitting ? 'opacity-50' : ''}
+                        className={`bg-primary ${isSubmitting ? 'opacity-50' : ''}`}
                     >
                         {isSubmitting ? 'Mengaktifkan...' : 'Aktifkan Sekarang'}
                     </Button>
                 </Block>
             </form>
-        </Page>
+        </>
     );
 }
