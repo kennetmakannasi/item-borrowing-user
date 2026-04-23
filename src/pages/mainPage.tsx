@@ -55,6 +55,7 @@ export default function MainPage() {
     });
 
     const handleCategory = (data: number | null) => {
+        setData([]);
         setSelectedCategoryId(data);
         setCurrentPage(1);
     }
@@ -169,6 +170,7 @@ export default function MainPage() {
                     ))}
                 </div>
             </div>
+            <h1 className='font-semibold text-xl ml-4 pt-4'>Untuk Anda</h1>
             <CategoryList onClick={handleCategory} selectedCategoryId={selectedCategoryId} />
             {isError ? (
                 <Block className="text-center text-red-500">Gagal mengambil data.</Block>

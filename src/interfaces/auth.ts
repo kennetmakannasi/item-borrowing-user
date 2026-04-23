@@ -58,7 +58,22 @@ export interface ActivationRequest {
     password: string;
 }
 
+export interface ResetPasswordRequest {
+    email: string;
+}
+
+export interface ResetPasswordData {
+    user_id: number;
+}
+
+export interface VerifyResetPasswordRequest {
+    user_id: number;
+    otp_code: string;
+    new_password: string;
+}
+
 export type LoginResponse = GeneralResponse<LoginData>;
 export type RegisterResponse = GeneralResponse<RegisterData>;
 export type VerifyEmailResponse = GeneralResponse<any>;
 export type ProfileResponse = GeneralResponse<UserProfile>;
+export type ResetPasswordResponse = GeneralResponse<ResetPasswordData>;

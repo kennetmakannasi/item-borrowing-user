@@ -63,7 +63,7 @@ export default function LoginPage() {
     return (
         <>
             <Block className="text-center mt-10">
-                <h1 className="text-2xl font-semibold">Selamat datang di appname</h1>
+                <h1 className="text-2xl font-semibold">Selamat datang di VeloLend</h1>
                 <h1 className="text-2xl font-semibold">Masuk Sekarang</h1>
             </Block>
 
@@ -83,7 +83,7 @@ export default function LoginPage() {
                 </div>
 
                 {/* Input Password */}
-                <div className="space-y-1 px-4">
+                <div className="space-y-1 px-4 relative">
                     <div className="relative">
                         <input
                             {...register('password')}
@@ -107,9 +107,12 @@ export default function LoginPage() {
                     {errors.password && (
                         <p className="text-xs text-red-500 ml-4 font-medium">{errors.password.message}</p>
                     )}
+                    <Link className='absolute right-5' to='/auth/forgot-password'>
+                        <p>Lupa Kata Sandi?</p>
+                    </Link>
                 </div>
 
-                <Block className="p-0 m-0! pt-4 space-y-3 text-center">
+                <Block className="p-0 m-0! pt-6 space-y-3 text-center">
                     <Button
                         rounded
                         large

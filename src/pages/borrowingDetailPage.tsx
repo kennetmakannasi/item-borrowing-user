@@ -26,6 +26,7 @@ import Divider from '../components/custom/divider';
 import { transactionTypeMapper } from '../utils/transactionTypeMapper';
 import BorrowingDetailSkeleton from '../components/custom/skeletons/borrowingDetailSkeleton';
 import StatusBadge from '../components/custom/statusBadge';
+import useFormatRupiah from '../utils/rupiahFormatter';
 
 export default function BorrowingDetailPage() {
     const navigate = useNavigate();
@@ -121,9 +122,8 @@ export default function BorrowingDetailPage() {
     };
 
     const hasPaid = transactionData?.some(t => t.status === 'paid');
-    const isReturned = !!borrowingData?.returnings;
-
-    if (isLoading) return <BorrowingDetailSkeleton/>;
+    const isReturned = borrowingData?.returnings && borrowingData?.returnings.status !== 'rejected';
+    if (isLoading) return <BorrowingDetailSkeleton />;
 
     const qrDataRaw = borrowingData ? {
         borrowing_id: borrowingData.id,
@@ -146,11 +146,11 @@ export default function BorrowingDetailPage() {
             <Block className='grid grid-cols-1 gap-4 pb-10'>
                 <div className='flex justify-between'>
                     <p className='text-gray-500'>ID Peminjaman</p>
-                    <p className='font-medium'>{borrowingData?.id}</p>
+                    <p className='text-gray-600'>{borrowingData?.id}</p>
                 </div>
                 <div className='flex justify-between'>
                     <p className='text-gray-500'>Tipe Pembayaran</p>
-                    <p className='font-medium'>{transactionTypeMapper(borrowingData?.payment_type)}</p>
+                    <p className='text-gray-600'>{transactionTypeMapper(borrowingData?.payment_type)}</p>
                 </div>
                 <div className='flex justify-between'>
                     <p className='text-gray-500'>Status Pinjam</p>
@@ -160,11 +160,11 @@ export default function BorrowingDetailPage() {
                 </div>
                 <div className='flex justify-between'>
                     <p className='text-gray-500'>Tgl Pinjam</p>
-                    <p>{useFormatDate(borrowingData?.borrow_date || '-')}</p>
+                    <p className='text-gray-600'>{useFormatDate(borrowingData?.borrow_date || '-')}</p>
                 </div>
                 <div className='flex justify-between'>
                     <p className='text-gray-500'>Batas Kembali</p>
-                    <p>{useFormatDate(borrowingData?.return_date || '-')}</p>
+                    <p className='text-gray-600'>{useFormatDate(borrowingData?.return_date || '-')}</p>
                 </div>
                 <Button rounded className='mt-2 bg-primary' onClick={() => setIsQRModalOpen(!isQRModalOpen)}>Tampilkan QR Peminjaman</Button>
 
@@ -196,7 +196,7 @@ export default function BorrowingDetailPage() {
                             <div key={t.id} className="bg-white shadow-md rounded-xl p-4 text-start border-gray-200 border-2">
                                 <div className='flex justify-between mb-4'>
                                     <p className="text-gray-500 text-sm">ID Pembayaran</p>
-                                    <p className="font-bold">{t.id}</p>
+                                    <p className="text-gray-600">{t.id}</p>
                                 </div>
                                 <div className='flex justify-between mb-4'>
                                     <p className="text-gray-500 text-sm">Status Bayar</p>
@@ -206,15 +206,15 @@ export default function BorrowingDetailPage() {
                                 </div>
                                 <div className='flex justify-between mb-4'>
                                     <p className="text-gray-500 text-sm">Tipe Pembayaran</p>
-                                    <p className="font-bold">{transactionTypeMapper(t.type)}</p>
+                                    <p className="text-gray-600">{transactionTypeMapper(t.type)}</p>
                                 </div>
                                 <div className='flex justify-between mb-4'>
                                     <p className="text-gray-500 text-sm">Total</p>
-                                    <p className="font-bold">Rp {Number(t.amount).toLocaleString('id-ID')}</p>
+                                    <p className="text-gray-600 font-bold">{useFormatRupiah(t.amount)}</p>
                                 </div>
                                 <div className='flex justify-between mb-4'>
                                     <p className="text-gray-500 text-sm">Dibayarkan Pada</p>
-                                    <p className="font-bold">{
+                                    <p className="text-gray-600">{
                                         useFormatDate(t?.paid_at || '-')
                                     }</p>
                                 </div>
@@ -233,14 +233,18 @@ export default function BorrowingDetailPage() {
                     </>
                 )}
 
-                {isReturned && (
+                {borrowingData?.returnings && (
                     <>
                         <Divider />
                         <h1 className='font-semibold text-xl mb-5'>Pengembalian</h1>
                         <div className="bg-white shadow-md rounded-xl p-4 text-start border-gray-200 border-2">
                             <div className='flex justify-between mb-4'>
+                                <p className="text-gray-500 text-sm">ID Pengembalian</p>
+                                <p className="text-gray-600">{borrowingData?.returnings.id || '-'}</p>
+                            </div>
+                            <div className='flex justify-between mb-4'>
                                 <p className="text-gray-500 text-sm">Kondisi Barang</p>
-                                <p className="font-bold">{returningConditonStatusMapper(borrowingData?.returnings?.returned_condition || '-')}</p>
+                                <p className="text-gray-600">{returningConditonStatusMapper(borrowingData?.returnings?.returned_condition || '-')}</p>
                             </div>
                             <div className='flex justify-between mb-4'>
                                 <p className="text-gray-500 text-sm">Verifikasi Admin</p>
@@ -248,9 +252,17 @@ export default function BorrowingDetailPage() {
                                     status={borrowingData?.returnings?.status || '-'}
                                 />
                             </div>
+                            {borrowingData?.returnings && borrowingData?.returnings.status === 'rejected' &&
+                                <div className='flex justify-between mb-4'>
+                                    <p className="text-gray-500 text-sm">Verifikasi Admin</p>
+                                    <p className="text-gray-600">
+                                        {borrowingData?.returnings?.reject_reason || '-'}
+                                    </p>
+                                </div>
+                            }
                             <div className='flex justify-between mb-4'>
                                 <p className="text-gray-500 text-sm">Tanggal Pengembalian</p>
-                                <p className="font-bold">{useFormatDate(borrowingData?.returnings?.returned_date || '-')}</p>
+                                <p className="text-gray-600">{useFormatDate(borrowingData?.returnings?.returned_date || '-')}</p>
                             </div>
                         </div>
                     </>
@@ -368,12 +380,12 @@ export default function BorrowingDetailPage() {
                                 className="mx-auto"
                                 value={qrData}
                                 level="H"
-                                includeMargin={false} 
-                                style={{ width: '200px', height: '200px' }} 
+                                includeMargin={false}
+                                style={{ width: '200px', height: '200px' }}
                             />
                         </div>
 
-                        <Divider/>
+                        <Divider />
 
                         <Button
                             large

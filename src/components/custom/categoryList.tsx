@@ -1,4 +1,3 @@
-import { Badge } from "konsta/react";
 import { useQuery } from "@tanstack/react-query";
 import { getCategoriesApi } from "../../api/categories";
 
@@ -8,35 +7,39 @@ interface CategoryListProps {
 }
 
 export default function CategoryList({ onClick, selectedCategoryId }: CategoryListProps) {
-    const { data, isLoading, isError } = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ['categories'],
         queryFn: () => getCategoriesApi(1),
     });
 
-    if (isLoading) return <div className="h-10 animate-pulse bg-gray-200 rounded-lg m-4" />;
-
-    const active = { bg: 'bg-primary', text: 'text-white' }
-    const inActive = { bg: 'bg-white', text: 'text-gray-700' }
+    if (isLoading) return <div className="h-12 animate-pulse bg-gray-200 rounded-full m-4" />;
 
     return (
-        <div className="relative">
-            <div className="flex gap-x-10 overflow-x-auto py-4 px-4 no-scrollbar scroll-smooth snap-x">
-                <button className={`text-gray-500 ${selectedCategoryId ? '' : 'text-primary font-semibold'}`} onClick={() => onClick(null)}>
+        <div className="relative bg-linear-to-r from-transparent via-white/50 to-transparent dark:via-zinc-900/50">
+            <div className="flex gap-x-3 overflow-x-auto py-4 px-4 no-scrollbar scroll-smooth snap-x">
+                <button 
+                    onClick={() => onClick(null)}
+                    className={`px-5 py-2 rounded-full whitespace-nowrap font-medium transition-all duration-200 shrink-0 ${
+                        selectedCategoryId === null
+                            ? 'bg-primary text-white shadow-md'
+                            : 'bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-zinc-700'
+                    }`}
+                >
                     Semua
-                    {selectedCategoryId === null &&
-                        <div className="w-full bg-primary h-1 rounded-full"></div>
-                    }
                 </button>
 
-
                 {data?.data?.map((item) => (
-                    <button className={`text-gray-500 ${selectedCategoryId === item.id ? 'text-primary font-semibold ' : ''}`} onClick={() => onClick(item.id)}>
-                        {item.name.length > 10 ? item.name.slice(0, 7) + '...' : item.name}
-                        {selectedCategoryId === item.id &&
-                            <div className="w-full bg-primary h-1 rounded-full"></div>
-                        }
+                    <button
+                        key={item.id}
+                        onClick={() => onClick(item.id)}
+                        className={`px-5 py-2 rounded-full whitespace-nowrap font-medium transition-all duration-200 shrink-0 ${
+                            selectedCategoryId === item.id
+                                ? 'bg-primary text-white shadow-md'
+                                : 'bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-zinc-700'
+                        }`}
+                    >
+                        {item.name.length > 12 ? item.name.slice(0, 10) + '...' : item.name}
                     </button>
-
                 ))}
             </div>
         </div>

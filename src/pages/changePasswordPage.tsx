@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Page, Block, Button } from 'konsta/react';
+import { Page, Block, Button, NavbarBackLink, Navbar } from 'konsta/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from '@tanstack/react-router';
@@ -59,10 +59,13 @@ export default function ChangePasswordPage() {
     }
 
     return (
-        <Page>
-            <Block className="text-center mt-10">
-                <h1 className="text-3xl font-bold text-primary">Ubah Password</h1>
-            </Block>
+        <>
+            <Navbar
+                title="Ubah Password"
+                centerTitle={true}
+                left={<NavbarBackLink onClick={() => history.go(-1)} />}
+                colors={{ bgMaterial: 'bg-white' }}
+            />
 
             <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">
                 {/* Current Password */}
@@ -152,19 +155,12 @@ export default function ChangePasswordPage() {
                         large
                         type="submit"
                         disabled={isSubmitting}
-                        className={isSubmitting ? 'opacity-50' : ''}
+                        className={`bg-primary ${isSubmitting ? 'opacity-50' : ''}`}
                     >
                         {isSubmitting ? 'Memproses...' : 'Ubah Password'}
                     </Button>
-                    <button
-                        type="button"
-                        onClick={() => history.go(-1)}
-                        className='text-sm text-gray-500 hover:text-gray-700'
-                    >
-                        Kembali
-                    </button>
                 </Block>
             </form>
-        </Page>
+        </>
     );
 }

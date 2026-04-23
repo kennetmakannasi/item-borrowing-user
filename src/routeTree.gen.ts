@@ -18,9 +18,11 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as MainRouteImport } from './routes/_main'
 import { Route as MainIndexRouteImport } from './routes/_main/index'
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
+import { Route as AuthResetPasswordVerifyRouteImport } from './routes/auth/reset-password-verify'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthInviteRouteImport } from './routes/auth/invite'
+import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as MainSearchResultRouteImport } from './routes/_main/search-result'
 import { Route as MainSearchRouteImport } from './routes/_main/search'
 import { Route as MainProfileRouteImport } from './routes/_main/profile'
@@ -72,6 +74,11 @@ const AuthVerifyEmailRoute = AuthVerifyEmailRouteImport.update({
   path: '/verify-email',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthResetPasswordVerifyRoute = AuthResetPasswordVerifyRouteImport.update({
+  id: '/reset-password-verify',
+  path: '/reset-password-verify',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -85,6 +92,11 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
 const AuthInviteRoute = AuthInviteRouteImport.update({
   id: '/invite',
   path: '/invite',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => AuthRoute,
 } as any)
 const MainSearchResultRoute = MainSearchResultRouteImport.update({
@@ -132,9 +144,11 @@ export interface FileRoutesByFullPath {
   '/profile': typeof MainProfileRoute
   '/search': typeof MainSearchRoute
   '/search-result': typeof MainSearchResultRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/invite': typeof AuthInviteRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/auth/reset-password-verify': typeof AuthResetPasswordVerifyRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
 }
 export interface FileRoutesByTo {
@@ -150,9 +164,11 @@ export interface FileRoutesByTo {
   '/profile': typeof MainProfileRoute
   '/search': typeof MainSearchRoute
   '/search-result': typeof MainSearchResultRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/invite': typeof AuthInviteRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/auth/reset-password-verify': typeof AuthResetPasswordVerifyRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/': typeof MainIndexRoute
 }
@@ -171,9 +187,11 @@ export interface FileRoutesById {
   '/_main/profile': typeof MainProfileRoute
   '/_main/search': typeof MainSearchRoute
   '/_main/search-result': typeof MainSearchResultRoute
+  '/auth/forgot-password': typeof AuthForgotPasswordRoute
   '/auth/invite': typeof AuthInviteRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/auth/reset-password-verify': typeof AuthResetPasswordVerifyRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/_main/': typeof MainIndexRoute
 }
@@ -193,9 +211,11 @@ export interface FileRouteTypes {
     | '/profile'
     | '/search'
     | '/search-result'
+    | '/auth/forgot-password'
     | '/auth/invite'
     | '/auth/login'
     | '/auth/register'
+    | '/auth/reset-password-verify'
     | '/auth/verify-email'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -211,9 +231,11 @@ export interface FileRouteTypes {
     | '/profile'
     | '/search'
     | '/search-result'
+    | '/auth/forgot-password'
     | '/auth/invite'
     | '/auth/login'
     | '/auth/register'
+    | '/auth/reset-password-verify'
     | '/auth/verify-email'
     | '/'
   id:
@@ -231,9 +253,11 @@ export interface FileRouteTypes {
     | '/_main/profile'
     | '/_main/search'
     | '/_main/search-result'
+    | '/auth/forgot-password'
     | '/auth/invite'
     | '/auth/login'
     | '/auth/register'
+    | '/auth/reset-password-verify'
     | '/auth/verify-email'
     | '/_main/'
   fileRoutesById: FileRoutesById
@@ -313,6 +337,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthVerifyEmailRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/auth/reset-password-verify': {
+      id: '/auth/reset-password-verify'
+      path: '/reset-password-verify'
+      fullPath: '/auth/reset-password-verify'
+      preLoaderRoute: typeof AuthResetPasswordVerifyRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/auth/register': {
       id: '/auth/register'
       path: '/register'
@@ -332,6 +363,13 @@ declare module '@tanstack/react-router' {
       path: '/invite'
       fullPath: '/auth/invite'
       preLoaderRoute: typeof AuthInviteRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/auth/forgot-password': {
+      id: '/auth/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/auth/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof AuthRoute
     }
     '/_main/search-result': {
@@ -402,16 +440,20 @@ const MainRouteChildren: MainRouteChildren = {
 const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
 
 interface AuthRouteChildren {
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthInviteRoute: typeof AuthInviteRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  AuthResetPasswordVerifyRoute: typeof AuthResetPasswordVerifyRoute
   AuthVerifyEmailRoute: typeof AuthVerifyEmailRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthInviteRoute: AuthInviteRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  AuthResetPasswordVerifyRoute: AuthResetPasswordVerifyRoute,
   AuthVerifyEmailRoute: AuthVerifyEmailRoute,
 }
 

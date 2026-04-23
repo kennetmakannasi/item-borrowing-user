@@ -1,4 +1,4 @@
-import type { ActivationRequest, InvitationProfile, LoginRequest, LoginResponse, ProfileResponse, RegisterRequest, RegisterResponse, User, UserProfile, VerifyEmailRequest, VerifyEmailResponse } from "../interfaces/auth";
+import type { ActivationRequest, InvitationProfile, LoginRequest, LoginResponse, ProfileResponse, RegisterRequest, RegisterResponse, ResetPasswordRequest, ResetPasswordResponse, UserProfile, VerifyEmailRequest, VerifyEmailResponse, VerifyResetPasswordRequest } from "../interfaces/auth";
 import type { GeneralResponse } from "../interfaces/generalResponse";
 import { api } from "../utils/api";
 import useError from "../utils/useError";
@@ -88,5 +88,33 @@ export const logoutApi = async (): Promise<GeneralResponse<void>> => {
             message: error.response?.data?.message ?? error.message ?? "Login Failed",
             data: error?.response?.data?.data ?? null
         })
+    }
+};
+
+export const requestResetPasswordApi = async (data: ResetPasswordRequest): Promise<ResetPasswordResponse> => {
+    try {
+        const response = await api.post<ResetPasswordResponse>(`auth/reset-password/request`, data);
+        return response.data;
+    } catch (error: any) {
+        console.error('Reset Password Request Error:', error);
+        return useError({
+            code: error.response?.status ?? 500,
+            message: error.response?.data?.message ?? error.message ?? "Permintaan Reset Password Gagal",
+            data: null
+        });
+    }
+};
+
+export const verifyAndResetPasswordApi = async (data: VerifyResetPasswordRequest): Promise<GeneralResponse<void>> => {
+    try {
+        const response = await api.post<GeneralResponse<void>>(`auth/reset-password/verify`, data);
+        return response.data;
+    } catch (error: any) {
+        console.error('Verify Reset Password Error:', error);
+        return useError({
+            code: error.response?.status ?? 500,
+            message: error.response?.data?.message ?? error.message ?? "Verifikasi dan Reset Password Gagal",
+            data: null
+        });
     }
 };
