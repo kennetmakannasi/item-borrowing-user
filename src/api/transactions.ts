@@ -2,9 +2,9 @@ import type { PostPaymentResponse } from "../interfaces/transactions";
 import { api } from "../utils/api";
 import useError from "../utils/useError";
 
-export async function PaymentRequestApi(transactionId: number): Promise<PostPaymentResponse> {
+export async function PaymentRequestApi(transactionId: number, method: 'transfer' | 'cash'): Promise<PostPaymentResponse> {
     try {
-        const response = await api.post<PostPaymentResponse>(`/api/payment/initiate/${transactionId}`, {});
+        const response = await api.post<PostPaymentResponse>(`/api/payment/initiate/${transactionId}?method=${method}`, {});
 
         return response.data;
 

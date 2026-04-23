@@ -37,7 +37,9 @@ export default function BorrowingDetailPage() {
     const { user } = useAuth()
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [isQRModalOpen, setIsQRModalOpen] = useState(false);
+    const [selectedTransactionId, setSelectedTransactionId] = useState(null);
     const [returnedCondition, setReturnedCondition] = useState(null);
     const [evidenceFile, setEvidenceFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -77,18 +79,39 @@ export default function BorrowingDetailPage() {
     };
 
     const paymentMutation = useMutation({
-        mutationFn: (transactionId: number) => PaymentRequestApi(transactionId),
-        onSuccess: (res) => {
-            if (res.success && res.data.snapToken) {
-                window.snap.pay(res.data.snapToken.token, {
-                    onSuccess: () => {
-                        showToast("Pembayaran Berhasil!");
-                        refetch();
-                    },
-                    onError: () => showToast("Pembayaran Gagal", "error"),
-                });
+        mutationFn: ({ transactionId, method }: { transactionId: number; method: 'transfer' | 'cash' }) =>
+            PaymentRequestApi(transactionId, method),
+        onSuccess: (res, variables) => {
+            const { method } = variables;
+            setSelectedTransactionId(null); // Reset ID setelah berhasil diproses
+
+            if (method === 'transfer') {
+                if (res.success && res.data.snapToken) {
+                    window.snap.pay(res.data.snapToken.token, {
+                        onSuccess: () => {
+                            showToast("Pembayaran Berhasil!");
+                            refetch();
+                        },
+                        onPending: () => {
+                            showToast("Menunggu Pembayaran...");
+                            refetch();
+                        },
+                        onError: () => showToast("Pembayaran Gagal", "error"),
+                    });
+                } else {
+                    showToast(res.message || "Gagal mendapatkan token pembayaran", "error");
+                }
             }
-        }
+            else if (method === 'cash') {
+                if (res.success) {
+                    showToast("Permintaan pembayaran tunai dikirim!");
+                    refetch();
+                } else {
+                    showToast(res.message || "Gagal memproses tunai", "error");
+                }
+            }
+        },
+        // ... onError tetap sama
     });
 
     const returnMutation = useMutation({
@@ -106,17 +129,13 @@ export default function BorrowingDetailPage() {
     const handleConfirmReturn = () => {
         if (!borrowingData) return;
 
-        if (!returnedCondition) {
-            showToast("Pilih kondisi barang", "error");
-            return;
-        }
+        // if (!returnedCondition) {
+        //     showToast("Pilih kondisi barang", "error");
+        //     return;
+        // }
         returnMutation.mutate({
             borrowing_id: borrowingData.id,
-            item_id: borrowingData.item.id,
-            item_variant_id: borrowingData.selected_variant.id,
-            warehouse_id: 1,
             returned_quantity: borrowingData.quantity,
-            returned_condition: returnedCondition,
             return_evidence_file: evidenceFile,
         });
     };
@@ -221,11 +240,14 @@ export default function BorrowingDetailPage() {
                                 {t.status === 'unpaid' && (
                                     <Button
                                         rounded
-                                        onClick={() => paymentMutation.mutate(t.id)}
+                                        onClick={() => {
+                                            setSelectedTransactionId(t.id); // Simpan ID transaksi
+                                            setIsPaymentModalOpen(true);    // Buka modal pilihan
+                                        }}
                                         disabled={paymentMutation.isPending}
                                         className='bg-primary'
                                     >
-                                        {paymentMutation.isPending ? 'Menghubungkan...' : 'Bayar Sekarang'}
+                                        Bayar Sekarang
                                     </Button>
                                 )}
                             </div>
@@ -284,8 +306,7 @@ export default function BorrowingDetailPage() {
                         <h1 className='font-bold text-2xl'>Konfirmasi Pengembalian</h1>
                     </div>
 
-                    {/* Seksi Kondisi Barang */}
-                    <section className="mb-6">
+                    {/* <section className="mb-6">
                         <p className='text-sm text-gray-500 tracking-wider mb-3'>Kondisi Barang</p>
                         <div className='grid grid-cols-2 gap-3'>
                             {conditonOption.map((item, index) => (
@@ -301,7 +322,7 @@ export default function BorrowingDetailPage() {
                                 </div>
                             ))}
                         </div>
-                    </section>
+                    </section> */}
 
                     {/* Seksi Upload Foto */}
                     <section className="mb-6">
@@ -394,6 +415,65 @@ export default function BorrowingDetailPage() {
                             onClick={() => setIsQRModalOpen(false)}
                         >
                             Tutup
+                        </Button>
+                    </div>
+                </Block>
+            </Sheet>
+            <Sheet className='bg-white' opened={isPaymentModalOpen} onBackdropClick={() => setIsPaymentModalOpen(false)}>
+                <Block>
+                    <div className="flex flex-col items-center">
+                        <h1 className="font-bold text-2xl mb-2">Pilih Metode Pembayaran</h1>
+                        <p className="text-center text-gray-500 text-sm leading-relaxed mb-6 px-4">
+                            Pilih metode pembayaran yang Anda inginkan.
+                        </p>
+
+                        <div className="flex gap-2 w-full">
+                            <button
+                                onClick={() => {
+                                    if (selectedTransactionId) {
+                                        paymentMutation.mutate({
+                                            transactionId: selectedTransactionId,
+                                            method: 'cash'
+                                        });
+                                        setIsPaymentModalOpen(false);
+                                    }
+                                }}
+                                className="flex-1 py-3 px-1 rounded-lg text-sm font-medium border transition-all border-gray-200 text-gray-600 active:bg-gray-100"
+                            >
+                                <div className="flex flex-col items-center gap-1">
+                                    <Icon icon="material-symbols:payments-outline" className="text-2xl" />
+                                    Tunai
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    if (selectedTransactionId) {
+                                        paymentMutation.mutate({
+                                            transactionId: selectedTransactionId,
+                                            method: 'transfer'
+                                        });
+                                        setIsPaymentModalOpen(false);
+                                    }
+                                }}
+                                className="flex-1 py-3 px-1 rounded-lg text-sm font-medium border transition-all border-gray-200 text-gray-600 active:bg-gray-100"
+                            >
+                                <div className="flex flex-col items-center gap-1">
+                                    <Icon icon="material-symbols:account-balance-outline" className="text-2xl" />
+                                    Transfer
+                                </div>
+                            </button>
+                        </div>
+
+                        <Divider />
+
+                        <Button
+                            large
+                            rounded
+                            className="w-full bg-primary"
+                            onClick={() => setIsPaymentModalOpen(false)}
+                        >
+                            Batal
                         </Button>
                     </div>
                 </Block>
