@@ -68,7 +68,7 @@ export default function ScanQrPage() {
     return (
         <div className="bg-black h-screen flex relative items-center">
             <Html5QrcodePlugin />
-            <div className='absolute bottom-10 px-4 w-full'>
+            <div className='absolute bottom-10 px-4 w-full bg-primary'>
                 <Button rounded onClick={ () => navigate({
                     to: '/',
                     replace: true

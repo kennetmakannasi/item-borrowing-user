@@ -6,13 +6,10 @@ import { PaymentRequestApi } from "../api/transactions";
 import { returnRequestApi } from '../api/returning';// Import API yang sudah kita update
 import {
     Navbar,
-    Page,
-    Badge,
     Button,
     Sheet,
     Block,
-    NavbarBackLink,
-    Card
+    NavbarBackLink
 } from 'konsta/react';
 import { useToast } from "../context/toastContext";
 import { useState } from "react";
@@ -23,7 +20,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { borrowingStatusMapper, returningConditonStatusMapper, returningStatusMapper, transactionStatusMapper } from '../utils/statusMappers';
 import useFormatDate from '../utils/dateFormatter';
 import Divider from '../components/custom/divider';
-import { transactionTypeMapper } from '../utils/transactionTypeMapper';
+import { renderPaymentMethod, transactionTypeMapper } from '../utils/transactionTypeMapper';
 import BorrowingDetailSkeleton from '../components/custom/skeletons/borrowingDetailSkeleton';
 import StatusBadge from '../components/custom/statusBadge';
 import useFormatRupiah from '../utils/rupiahFormatter';
@@ -39,7 +36,7 @@ export default function BorrowingDetailPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [isQRModalOpen, setIsQRModalOpen] = useState(false);
-    const [selectedTransactionId, setSelectedTransactionId] = useState(null);
+    const [selectedTransactionId, setSelectedTransactionId] = useState<number | null>(null);
     const [returnedCondition, setReturnedCondition] = useState(null);
     const [evidenceFile, setEvidenceFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -72,7 +69,6 @@ export default function BorrowingDetailPage() {
         const file = e.target.files?.[0];
         if (file) {
             setEvidenceFile(file);
-            // Buat URL preview
             const url = URL.createObjectURL(file);
             setPreviewUrl(url);
         }
@@ -169,17 +165,21 @@ export default function BorrowingDetailPage() {
                 </div>
                 <div className='flex justify-between'>
                     <p className='text-gray-500'>Tipe Pembayaran</p>
-                    <p className='text-gray-600'>{transactionTypeMapper(borrowingData?.payment_type)}</p>
+                    <p className='text-gray-600'>{transactionTypeMapper(borrowingData?.payment_type || '-')}</p>
                 </div>
                 <div className='flex justify-between'>
                     <p className='text-gray-500'>Status Pinjam</p>
                     <StatusBadge
-                        status={borrowingData?.status}
+                        status={borrowingData?.status || '-'}
                     />
                 </div>
                 <div className='flex justify-between'>
-                    <p className='text-gray-500'>Tgl Pinjam</p>
+                    <p className='text-gray-500'>Tanggal Peminjaman</p>
                     <p className='text-gray-600'>{useFormatDate(borrowingData?.borrow_date || '-')}</p>
+                </div>
+                <div className='flex justify-between'>
+                    <p className='text-gray-500'>Total Pembayaran</p>
+                    <p className='text-gray-600 font-bold'>{useFormatRupiah(Number(borrowingData?.total_amount))}</p>
                 </div>
                 <div className='flex justify-between'>
                     <p className='text-gray-500'>Batas Kembali</p>
@@ -197,7 +197,7 @@ export default function BorrowingDetailPage() {
                         <div className="flex gap-x-4 h-full w-full items-center">
                             <img className="size-16 rounded-xl object-cover" src={borrowingData?.item.image_url || 'placeholders/item.png'} alt="" />
                             <div>
-                                <p className="text-lg font-semibold">{useSubstring(borrowingData?.item.name)}</p>
+                                <p className="text-lg font-semibold">{useSubstring(borrowingData?.item.name || '-')}</p>
                                 <p className="text-gray-500 text-sm">Varian {borrowingData?.selected_variant.name}</p>
                                 <p className="text-gray-500 text-sm">Total Jumlah Pinjam {borrowingData?.quantity}</p>
                             </div>
@@ -228,8 +228,12 @@ export default function BorrowingDetailPage() {
                                     <p className="text-gray-600">{transactionTypeMapper(t.type)}</p>
                                 </div>
                                 <div className='flex justify-between mb-4'>
+                                    <p className="text-gray-500 text-sm">Metode Pembayaran</p>
+                                    <p className="text-gray-600">{renderPaymentMethod(t?.payment_method || '-')}</p>
+                                </div>
+                                <div className='flex justify-between mb-4'>
                                     <p className="text-gray-500 text-sm">Total</p>
-                                    <p className="text-gray-600 font-bold">{useFormatRupiah(t.amount)}</p>
+                                    <p className="text-gray-600 font-bold">{useFormatRupiah(Number(t.amount))}</p>
                                 </div>
                                 <div className='flex justify-between mb-4'>
                                     <p className="text-gray-500 text-sm">Dibayarkan Pada</p>
@@ -274,14 +278,14 @@ export default function BorrowingDetailPage() {
                                     status={borrowingData?.returnings?.status || '-'}
                                 />
                             </div>
-                            {borrowingData?.returnings && borrowingData?.returnings.status === 'rejected' &&
+                            {/* {borrowingData?.returnings && borrowingData?.returnings.status === 'rejected' &&
                                 <div className='flex justify-between mb-4'>
                                     <p className="text-gray-500 text-sm">Verifikasi Admin</p>
                                     <p className="text-gray-600">
-                                        {borrowingData?.returnings?.reject_reason || '-'}
+                                        {borrowingData?.returnings?.]] || '-'}
                                     </p>
                                 </div>
-                            }
+                            } */}
                             <div className='flex justify-between mb-4'>
                                 <p className="text-gray-500 text-sm">Tanggal Pengembalian</p>
                                 <p className="text-gray-600">{useFormatDate(borrowingData?.returnings?.returned_date || '-')}</p>

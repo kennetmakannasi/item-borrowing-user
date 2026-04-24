@@ -1,10 +1,12 @@
 import { createContext, useEffect } from "react";
 import Cookies from 'js-cookie';
+import { useToast } from "./toastContext";
 
 const SSEContext = createContext<null | undefined>(undefined);
 
 export const SSEProvider = ({ children }: { children: React.ReactNode }) => {
     const token = Cookies.get('auth_token');
+    const { showToast } = useToast();
     
     useEffect(() => {
         if (!token) return;
@@ -16,6 +18,7 @@ export const SSEProvider = ({ children }: { children: React.ReactNode }) => {
             try {
                 const data = JSON.parse(event.data);
                 console.log("Notifikasi  Baru:", data);
+                showToast("notif");
             } catch (e) {
                 console.log("Data bukan JSON:", event.data);
             }

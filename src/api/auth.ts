@@ -118,3 +118,20 @@ export const verifyAndResetPasswordApi = async (data: VerifyResetPasswordRequest
         });
     }
 };
+
+export const resendOTP = async (purpose: 'password_reset' | 'register', user_id: number, email: string): Promise<GeneralResponse<void>> => {
+    try {
+        const response = await api.post<GeneralResponse<void>>(`auth/verify-email/resend-otp?purpose=${purpose}`, {
+            user_id: user_id,
+            email: email
+        });
+        return response.data;
+    } catch (error: any) {
+        console.error('Verify Reset Password Error:', error);
+        return useError({
+            code: error.response?.status ?? 500,
+            message: error.response?.data?.message ?? error.message ?? "Verifikasi dan Reset Password Gagal",
+            data: null
+        });
+    }
+};

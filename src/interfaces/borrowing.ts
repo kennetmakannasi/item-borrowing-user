@@ -62,6 +62,7 @@ export interface TransactionInfo {
   id: number;
   amount: string;
   status: 'unpaid' | 'paid' | 'expired' | 'failed';
+  payment_method: 'cash' | 'bank_transfer'
   type: PaymentType;
   snap_token: string | null; 
   created_at: string;
@@ -80,6 +81,7 @@ export interface ReturningInfo {
 export interface BorrowDetailData {
   id: number;
   status: BorrowStatus;
+  total_amount: number;
   payment_type: PaymentType;
   borrow_date: string;
   return_date: string;

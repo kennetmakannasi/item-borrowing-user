@@ -25,11 +25,11 @@ if (!rootElement.innerHTML) {
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <SSEProvider>
-            <ToastProvider>
+          <ToastProvider>
+            <SSEProvider>
               <RouterProvider router={router} />
-            </ToastProvider>
-          </SSEProvider>
+            </SSEProvider>
+          </ToastProvider>
         </AuthProvider>
       </QueryClientProvider>
     </React.StrictMode>

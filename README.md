@@ -1,73 +1,143 @@
-# React + TypeScript + Vite
+# UKK Library Management System - User App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern mobile-first web application for library users to browse, borrow, and manage library items. Built with React, TypeScript, and Vite for optimal performance and developer experience.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Item Management
+- Browse library items with search and filtering
+- View detailed item information
+- Category-based item organization
+- Popular items carousel
 
-## React Compiler
+### Borrowing System
+- Request item borrowing
+- View borrowing history and status
+- QR code scanning for quick access
+- Real-time borrowing status updates
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### User Management
+- User authentication (login/register)
+- Profile management
+- Password reset functionality
+- Email verification
 
-## Expanding the ESLint configuration
+### Notifications
+- Real-time notifications via SSE (Server-Sent Events)
+- Borrowing status updates
+- System announcements
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Modern UI/UX
+- Mobile-first responsive design using Konsta UI
+- Smooth animations with Framer Motion
+- Dark/light theme support
+- Intuitive navigation with bottom tabs
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Tech Stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Frontend Framework
+- **React 19** - Modern React with concurrent features
+- **TypeScript** - Type-safe development
+- **Vite** - Fast build tool and dev server
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### UI & Styling
+- **Konsta UI** - Mobile-first UI component library
+- **Tailwind CSS** - Utility-first CSS framework
+- **Framer Motion** - Animation library
+
+### Routing & State Management
+- **TanStack Router** - Type-safe routing
+- **TanStack Query** - Powerful data fetching and caching
+- **React Hook Form** - Form management with validation
+- **Zod** - Schema validation
+
+### Additional Libraries
+- **Axios** - HTTP client
+- **QR Code Libraries** - QR code generation and scanning
+- **React Intersection Observer** - Lazy loading and scroll detection
+- **JS Cookies** - Cookie management
+- **Midtrans** - Payment integration
+
+## Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd fe/User
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   bun install
+   ```
+
+3. **Environment Setup**
+   Create a `.env` file in the root directory:
+   ```env
+   VITE_API_BASE_URL=http://localhost:8000
+   VITE_MIDTRANS_CLIENT_KEY=your_midtrans_client_key
+   ```
+
+4. **Start development server**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   bun dev
+   ```
+
+5. **Build for production**
+   ```bash
+   npm run build
+   ```
+
+## Project Structure
+
+```
+src/
+├── api/                 # API service functions
+├── assets/              # Static assets
+├── components/          # Reusable UI components
+│   ├── custom/          # Custom components
+│   └── skeletons/       # Loading skeleton components
+├── context/             # React context providers
+├── interfaces/          # TypeScript type definitions
+├── middlewares/         # Route protection middleware
+├── pages/               # Page components
+├── routes/              # Route definitions
+├── schemas/             # Validation schemas
+└── utils/               # Utility functions
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Available Scripts
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## API Integration
+
+The app integrates with a backend API that provides:
+- Authentication endpoints
+- Item management
+- Borrowing operations
+- Notification system
+- Payment processing (Midtrans)
+
+## Mobile Features
+
+- **Touch Gestures** - Swipe navigation and interactions
+- **QR Scanning** - Camera-based QR code scanning
+
+## Security
+
+- JWT-based authentication
+- Secure API communication
+- Input validation with Zod schemas
+- Protected routes with middleware
